@@ -1,0 +1,27 @@
+.name, .lastName, .FatherName, .login{
+  width: 12vw;
+  text-align: center;
+}
+
+.email{
+  width: 20vw;
+  text-align: center;
+}
+
+.password-generate{
+  display: flex;
+  justify-content: space-between;
+}
+
+#password{
+  margin-right: 10px;
+}
+
+#addUser-btn{
+  width: 35px;
+  height: 35px;
+  background-color: #EFEFEF;
+  border: 1px solid gray;
+  border-radius: 5px;
+  outline: 0;
+}

@@ -1,0 +1,66 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    volumes:
+      - ./docker/nginx:/etc/nginx/conf.d:ro
+      - ./etc/ssl:/etc/letsencrypt/
+      - ./src/:/var/www/html/
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - php
+      - mysql
+    restart: always
+    networks:
+      - frontend
+      - backend
+    links:
+      - phpmyadmin
+
+  php:
+    build:
+      context: ./docker/php
+    container_name: php
+    volumes:
+      - ./docker/php:/usr/local/etc/php/php.ini:ro
+      - ./src/:/var/www/html/
+    networks:
+      - backend
+    hostname: mrsu.dns.php
+
+  mysql:
+    image: mysql
+    container_name: mysql
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - backend
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - 3000:80
+    depends_on:
+      - mysql
+    environment:
+      - VIRTUAL_HOST=phpmyadmin.local
+      - PMA_HOST=mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+    networks:
+      - frontend
+      - backend
+networks:
+  frontend:
+    name: php-app-frontend-network
+    driver: bridge
+  backend:
+    name: php-app-backend-network
+    driver: bridge

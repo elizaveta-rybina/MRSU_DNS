@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link type="text/css" rel="stylesheet" href="css/style-popup.css">
+  <title>Вход в систему</title>
+</head>
+<body>
+  <div class="popup">
+      <div class="close-btn">&times;</div>
+      <form id="login-form" action="pages/main.html">
+          <p>Вход в систему</p>
+          <div class="form-element">
+              <label for="email">Логин</label>
+              <input type="text" id="login" name="login" placeholder="Введите логин">
+          </div>
+          <div class="form-element">
+              <label for="password">Пароль</label>
+              <input type="password" id="password" name="password" placeholder="Введите пароль">
+          </div>
+          <div class="form-element">
+              <input type="checkbox" id="remember-me">
+              <label for="remember-me">Запомнить меня</label>
+          </div>
+          <div class="form-element">
+              <button type="submit">Вход</button>
+          </div>
+      </form>
+  </div>
+</body>
+<script type="text/javascript" src="javascript/libs/jquery-3.7.0.min.js"></script>
+<script type="text/javascript" src="javascript/libs/popper.min.js"></script>
+<script type="text/javascript" src="javascript/libs/bootstrap.min.js"></script>
+
+<script type="module" src="javascript/sign/signin.js"></script>
+</html>

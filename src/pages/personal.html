@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/style-personal.css"/>
+  <title>Document</title>
+</head>
+<body>
+  <div class="returnDomains">
+    <img src="../image/left.png">
+    <form action="main.php" class="returnDomainText">
+      <button>Вернуться обратно</button>
+    </form>
+  </div>
+  <h1 class="page-title">Добро пожаловать!</h1>
+  <div class="personalName">
+    <p>Ваше имя: <span id="personName">Елена</span> </p>
+    <p>Ваше отчество: <span id="personFatherName">Ивановна</span> </p>
+    <p>Ваша фамилия: <span id="personLastName">Петрова</span></p>
+    <p>Ваша почта: <span id="personEmail">elenapetrova@example.com</span></p>
+  </div>
+  <div class="main-form">
+    <div class="form-head">
+      <h3>Доступный список доменов</h3>
+      <div class="right-side">
+        <form class="search-box">
+          <div class="row">
+            <input name="inputBox" type="text" id="inputBox" placeholder="Поиск" autocomplete="off">
+            <button type="sumbit">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </div>
+          <div class="result-box">
+          </div>
+        </form>
+        <div class="sort">
+          <button class="sortByName">
+            <i class="fa-solid fa-sort"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="form-middle">Домены и поддомены</div>
+    <div id="domains">
+      <div class="form-body">
+				<p>ep.mrsu.ru</p>
+				<div class="buttons">
+					<form action="settings.html">
+						<input type="hidden" name="domainid" value="8">
+						<button type="submit">
+              <i class="fa-solid fa-gear" style="color: #000000;" aria-hidden="true"></i>
+						</button>
+					</form>
+				</div>
+			</div>
+      <div class="form-body">
+				<p>sisupr.mrsu.ru</p>
+				<div class="buttons">
+					<form action="settings.html">
+						<input type="hidden" name="domainid" value="7">
+						<button type="submit">
+              <i class="fa-solid fa-gear" style="color: #000000;" aria-hidden="true"></i>
+						</button>
+					</form>
+				</div>
+			</div>
+    </div>
+  </div>
+
+  <script src="https://kit.fontawesome.com/c4254e24a8.js" crossorigin="anonymous"></script>
+</body>
+</html>

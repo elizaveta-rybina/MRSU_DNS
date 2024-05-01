@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link type="text/css" href="/css/bootstrap.min.css" rel="stylesheet">
+  <link type="text/css" rel="stylesheet" href="../css/style_setting.css">
+  <link type="text/css" rel="stylesheet" href="../css/style_users.css">
+  <title>Document</title>
+</head>
+
+<body>
+  <div class="container-main">
+    <div class="returnDomains">
+      <img src="../image/left.png">
+      <form action="admin_panel.html" class="returnDomainText">
+        <button>Вернуться обратно</button>
+      </form>
+    </div>
+    <h1 class="page-title" id="domain-title">Информация о пользователях</h1>
+    <div class="main-form">
+      <div class="form-head">
+        <h3>Список пользователей</h3>
+        <div class="right-side">
+          <div class="dropdown">
+            <button class="dropdown-button" type="button" id="dropdownMenuButton" data-toggle="modal" data-target="#addUser" aria-haspopup="true" aria-expanded="false">
+              <i class="fa-solid fa-plus" style="color: #000000;"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="form-middle">
+        <span>Имя</span>
+        <span>Фамилия</span>
+        <span>Отчество</span>
+        <span>Email</span>
+        <span>Логин</span>
+      </div>
+      <div id="users">
+
+      </div>
+      <div id="form-body">
+
+      </div>
+    </div>
+
+    <!-- Modal addUser-->
+    <form class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Добавление нового пользователя</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Имя</p>
+            <input id="name" class="form-control" name="name" type="text" required>
+            <p>Фамилия</p>
+            <input id="lastname" class="form-control" name="lastName" type="text" required>
+            <p>Отчество</p>
+            <input id="fathername" class="form-control" name="FatherName" type="text" required>
+            <p>Электронная почта</p>
+            <input id="email" class="form-control" name="email" type="email" required>
+            <p>Логин</p>
+            <input id="login" class="form-control" name="login" type="text" required>
+            <p>Пароль</p>
+            <div class="password-generate">
+              <input id="password" class="form-control" name="password" type="text" required>
+              <button id="addUser-btn">
+                <i class="fa-solid fa-key"></i>
+              </button>
+            </div>
+          </div>
+          <div class="modalError">
+            <p id="error" hidden></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+              Отменить
+            </button>
+            <button type="sumbit" class="btn btn-primary" id="ARecordButton">
+              Добавить
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <script type="text/javascript" src="../javascript/libs/jquery-3.7.0.min.js"></script>
+    <script type="text/javascript" src="../javascript/libs/popper.min.js"></script>
+    <script type="text/javascript" src="../javascript/libs/bootstrap.min.js"></script>
+
+    <script type="module" src="../javascript/randomPassword.js"></script>
+    <script type="module" src="../javascript/main/users.js"></script>
+    <script type="module" src="../javascript/sign/signup.js"></script>
+
+
+    <script src="https://kit.fontawesome.com/c4254e24a8.js" crossorigin="anonymous"></script>
+
+</body>
+
+</html>
