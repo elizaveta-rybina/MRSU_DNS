@@ -34,14 +34,14 @@ class DomainController
 	}
 
 	//Method for getting all domains
-	public function getAllDomains($orderby = "id DESC"): void
+	public function getAll($orderby = "id DESC"): void
 	{
 		$records = $this->executeQuery("getAllDomains", [$orderby]);
 		echo json_encode($records);
 	}
 
 	//Method for getting domain by id
-	public function getDomain($id): void
+	public function get($id): void
 	{
 		$records = $this->executeQuery("getDomainById", [$id]);
 		echo json_encode($records);
