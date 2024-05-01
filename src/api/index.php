@@ -1,18 +1,17 @@
 <?php
 
-declare(strict_types= 1);
+declare(strict_types=1);
 
 header('Content-Type: application/json; charset=utf-8');
-require_once 'controllers/DomainController.php';
 
-$requestUri = $_SERVER['REQUEST_URI'];
-$pathParts = explode('/', $requestUri);
+require_once 'gateways/DomainGateway.php';
+
+$pathParts = explode("/", $_SERVER["REQUEST_URI"]);
 
 $domains = new DomainController();
 
 $type = $pathParts[1];
 $id = $pathParts[2];
-
 
 switch ($type) {
     case 'domains':
