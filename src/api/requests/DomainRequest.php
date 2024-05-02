@@ -13,6 +13,7 @@ class domainRequest
     }
   }
 
+  //TODO: сделать delete + patch через Post
   private function processResourceRequest(string $method, string $id): void
   {
     $gateway = new DomainController();

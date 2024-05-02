@@ -5,7 +5,7 @@ declare(strict_types=1);
 header('Content-Type: application/json; charset=utf-8');
 
 require_once 'gateways/DomainGateway.php';
-require_once 'helpers/Request.php';
+require_once 'requests/DomainRequest.php';
 require_once 'helpers/ErrorHandle.php';
 
 set_error_handler("ErrorHandler::handleError");
