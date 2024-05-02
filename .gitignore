@@ -1,2 +1,4 @@
 docker/mysql
 data/
+dns_test.sql
+dns.sql
