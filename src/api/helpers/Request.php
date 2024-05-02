@@ -1,111 +1,100 @@
 <?php
 
-class domainController
+require_once 'gateways/DomainGateway.php';
+
+class domainRequest
 {
-	public function __construct(private DomainController $gateway)
-	{
-	}
+  public function processRequest(string $method, ?string $id): void
+  {
+    if ($id) {
+      $this->processResourceRequest($method, $id);
+    } else {
+      $this->processCollectionRequest($method);
+    }
+  }
 
-	public function processRequest(string $method, ?string $id): void
-	{
-		if ($id) {
+  private function processResourceRequest(string $method, string $id): void
+  {
+    $gateway = new DomainController();
+    $domain = $gateway->get($id);
+    switch ($method) {
+      case "GET":
+        echo json_encode($domain);
+        break;
 
-			$this->processResourceRequest($method, $id);
-		} else {
+      case "PATCH":
+        $data = (array) json_decode(file_get_contents("php://input"), true);
+        $errors = $this->getValidationErrors($data, false);
+        if (!empty($errors)) {
+          http_response_code(422);
+          echo json_encode(["errors" => $errors]);
+          break;
+        } else {
+          $rows = $gateway->update($domain, $data);
 
-			$this->processCollectionRequest($method);
-		}
-	}
+          echo json_encode([
+            "message" => "domain $id updated",
+            "rows" => $rows
+          ]);
+          break;
+        }
 
-	private function processResourceRequest(string $method, string $id): void
-	{
-		$domain = $this->gateway->get($id);
-		switch ($method) {
-			case "GET":
-				echo json_encode($domain);
-				break;
+      case "DELETE":
+        $rows = $gateway->delete($id);
 
-			case "PATCH":
-				$data = (array) json_decode(file_get_contents("php://input"), true);
+        echo json_encode([
+          "message" => "domain $id deleted",
+          "rows" => $rows
+        ]);
+        break;
 
-				$errors = $this->getValidationErrors($data, false);
+      default:
+        http_response_code(405);
+        header("Allow: GET, PATCH, DELETE");
+    }
+  }
 
-				if (!empty($errors)) {
-					http_response_code(422);
-					echo json_encode(["errors" => $errors]);
-					break;
-				}
+  private function processCollectionRequest(string $method): void
+  {
+    $gateway = new DomainController();
+    switch ($method) {
+      case "GET":
+        echo json_encode($gateway->getAll());
+        break;
 
-				$rows = $this->gateway->update($domain, $data);
+      case "POST":
+        $data = (array) json_decode(file_get_contents("php://input"), true);
 
-				echo json_encode([
-					"message" => "domain $id updated",
-					"rows" => $rows
-				]);
-				break;
+        var_dump($data);
 
-			case "DELETE":
-				$rows = $this->gateway->delete($id);
+        $errors = $this->getValidationErrors($data);
 
-				echo json_encode([
-					"message" => "domain $id deleted",
-					"rows" => $rows
-				]);
-				break;
+        if (!empty($errors)) {
+          http_response_code(422);
+          echo json_encode(["errors" => $errors]);
+          break;
+        } else {
+          $id = $gateway->add($data);
+          echo json_encode([
+            "message" => "domain created",
+            "id" => $id
+          ]);
+          break;
+        }
 
-			default:
-				http_response_code(405);
-				header("Allow: GET, PATCH, DELETE");
-		}
-	}
+      default:
+        http_response_code(405);
+        header("Allow: GET, POST");
+    }
+  }
 
-	private function processCollectionRequest(string $method): void
-	{
-		switch ($method) {
-			case "GET":
-				echo json_encode($this->gateway->getAll());
-				break;
+  private function getValidationErrors(array $data, bool $is_new = true): array
+  {
+    $errors = [];
 
-			case "POST":
-				$data = (array) json_decode(file_get_contents("php://input"), true);
-
-				$errors = $this->getValidationErrors($data);
-
-				if (!empty($errors)) {
-					http_response_code(422);
-					echo json_encode(["errors" => $errors]);
-					break;
-				}
-
-				$id = $this->gateway->create($data);
-
-				http_response_code(201);
-				echo json_encode([
-					"message" => "domain created",
-					"id" => $id
-				]);
-				break;
-
-			default:
-				http_response_code(405);
-				header("Allow: GET, POST");
-		}
-	}
-
-	private function getValidationErrors(array $data, bool $is_new = true): array
-	{
-		$errors = [];
-
-		if ($is_new && empty($data["name"])) {
-			$errors[] = "name is required";
-		}
-
-		if (array_key_exists("size", $data)) {
-			if (filter_var($data["size"], FILTER_VALIDATE_INT) === false) {
-				$errors[] = "size must be an integer";
-			}
-		}
-
-		return $errors;
-	}
+    if ($is_new && empty($data["name"])) {
+      $errors[] = "name is required";
+    }
+    return $errors;
+  }
 }
