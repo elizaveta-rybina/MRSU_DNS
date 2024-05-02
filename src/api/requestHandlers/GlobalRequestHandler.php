@@ -1,9 +1,16 @@
 <?php
 
-require_once 'gateways/DomainGateway.php';
+require_once 'repositories/domain/DomainRepositoryInterface.php';
 
-class domainRequest
+class GlobalRequestHandler
 {
+  private DomainRepositoryInterface $domainRepository;
+
+  public function __construct(DomainRepositoryInterface $domainRepository)
+  {
+    $this->domainRepository = $domainRepository;
+  }
+
   public function processRequest(string $method, ?string $id): void
   {
     if ($id) {
@@ -13,25 +20,23 @@ class domainRequest
     }
   }
 
-  //TODO: сделать delete + patch через Post
   private function processResourceRequest(string $method, string $id): void
   {
-    $gateway = new DomainController();
-    $domain = $gateway->get($id);
+    $domain = $this->domainRepository->get($id);
     switch ($method) {
       case "GET":
         echo json_encode($domain);
         break;
 
-      case "PATCH":
+      case "PUT":
         $data = (array) json_decode(file_get_contents("php://input"), true);
         $errors = $this->getValidationErrors($data, false);
         if (!empty($errors)) {
-          http_response_code(422);
+          http_response_code(403);
           echo json_encode(["errors" => $errors]);
           break;
         } else {
-          $rows = $gateway->update($domain, $data);
+          $rows = $this->domainRepository->update($domain, $data);
 
           echo json_encode([
             "message" => "domain $id updated",
@@ -41,7 +46,7 @@ class domainRequest
         }
 
       case "DELETE":
-        $rows = $gateway->delete($id);
+        $rows = $this->domainRepository->delete($id);
 
         echo json_encode([
           "message" => "domain $id deleted",
@@ -57,10 +62,10 @@ class domainRequest
 
   private function processCollectionRequest(string $method): void
   {
-    $gateway = new DomainController();
+    $repository = new DomainRepository();
     switch ($method) {
       case "GET":
-        echo json_encode($gateway->getAll());
+        echo json_encode($repository->getAll());
         break;
 
       case "POST":
@@ -71,11 +76,11 @@ class domainRequest
         $errors = $this->getValidationErrors($data);
 
         if (!empty($errors)) {
-          http_response_code(422);
+          http_response_code(403);
           echo json_encode(["errors" => $errors]);
           break;
         } else {
-          $id = $gateway->add($data);
+          $id = $repository->add($data);
           echo json_encode([
             "message" => "domain created",
             "id" => $id
