@@ -17,6 +17,6 @@ $type = $pathParts[1];
 $id = $pathParts[2] ?? null;
 
 $repository = new DomainRepository();
-$controller = new GlobalRequestHandler($repository);
+$handler = new GlobalRequestHandler($repository);
 
-$controller->processRequest($_SERVER["REQUEST_METHOD"], $id);
+$handler->processRequest($_SERVER["REQUEST_METHOD"], $id);
