@@ -13,8 +13,7 @@ services:
       - 443:443
     depends_on:
       - php
-      - mysql
-    restart: always
+    restart: unless-stopped
     networks:
       - frontend
       - backend
@@ -25,6 +24,8 @@ services:
     build:
       context: ./docker/php
     container_name: php
+    depends_on:
+      - mysql
     volumes:
       - ./docker/php:/usr/local/etc/php/php.ini:ro
       - ./src/:/var/www/html/

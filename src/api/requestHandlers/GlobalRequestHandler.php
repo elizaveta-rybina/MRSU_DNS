@@ -1,6 +1,7 @@
 <?php
 
 require_once 'repositories/domain/DomainRepositoryInterface.php';
+require_once 'entities/Domain.php';
 
 class GlobalRequestHandler
 {
@@ -29,29 +30,23 @@ class GlobalRequestHandler
         break;
 
       case "PUT":
-        $data = (array) json_decode(file_get_contents("php://input"), true);
+        $data = json_decode(file_get_contents("php://input"), true);
         $errors = $this->getValidationErrors($data, false);
         if (!empty($errors)) {
           http_response_code(403);
           echo json_encode(["errors" => $errors]);
-          break;
         } else {
           $rows = $this->domainRepository->update($domain, $data);
-
+          
           echo json_encode([
             "message" => "domain $id updated",
             "rows" => $rows
           ]);
-          break;
         }
+        break;
 
       case "DELETE":
-        $rows = $this->domainRepository->delete($id);
-
-        echo json_encode([
-          "message" => "domain $id deleted",
-          "rows" => $rows
-        ]);
+        $this->domainRepository->delete($id);
         break;
 
       default:
@@ -62,31 +57,23 @@ class GlobalRequestHandler
 
   private function processCollectionRequest(string $method): void
   {
-    $repository = new DomainRepository();
     switch ($method) {
       case "GET":
-        echo json_encode($repository->getAll());
+        echo json_encode($this->domainRepository->getAll());
         break;
 
       case "POST":
-        $data = (array) json_decode(file_get_contents("php://input"), true);
-
-        var_dump($data);
-
+        $data = json_decode(file_get_contents("php://input"), true);
         $errors = $this->getValidationErrors($data);
 
         if (!empty($errors)) {
           http_response_code(403);
           echo json_encode(["errors" => $errors]);
-          break;
         } else {
-          $id = $repository->add($data);
-          echo json_encode([
-            "message" => "domain created",
-            "id" => $id
-          ]);
-          break;
+          $this->domainRepository->add($data);
+          http_response_code(201);
         }
+        break;
 
       default:
         http_response_code(405);
