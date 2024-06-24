@@ -129,14 +129,14 @@ const Sidebar = () => {
             </Typography>
             <Item
               title="Пользователи"
-              to="/team"
+              to="/users"
               icon={<PeopleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Домены"
-              to="/contacts"
+              to="/domain"
               icon={<DnsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -177,7 +177,6 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-
           </Box>
         </Menu>
       </ProSidebar>
