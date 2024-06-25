@@ -143,7 +143,7 @@ const Sidebar = () => {
             />
             <Item
               title="Файлы зоны"
-              to="/invoices"
+              to="/zona"
               icon={<ArticleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}

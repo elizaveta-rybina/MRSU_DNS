@@ -16,6 +16,57 @@ import { tokens } from "../theme";
  * @property int $updated_at
  */
 
+export const mockDataRecord = [
+  {
+    id: 0,
+    domainId: 1,
+    type: "A",
+    value: "192.189.123.0",
+    priority: 10,
+    ttl: 86400
+  },
+  {
+    id: 1,
+    domainId: 1,
+    type: "A",
+    value: "192.189.123.0",
+    priority: 10,
+    ttl: 86400
+  },
+  {
+    id: 3,
+    domainId: 1,
+    type: "MX",
+    value: "sffs",
+    priority: 10,
+    ttl: 86400
+  },
+  {
+    id: 4,
+    domainId: 1,
+    type: "CNAME",
+    value: "svsvsv",
+    priority: 10,
+    ttl: 86400
+  },
+  {
+    id: 5,
+    domainId: 1,
+    type: "A",
+    value: "cssscscs",
+    priority: 10,
+    ttl: 86400
+  },
+  {
+    id: 6,
+    domainId: 1,
+    type: "A",
+    value: "194.139.125.0",
+    priority: 10,
+    ttl: 86400
+  }
+]
+
 export const mockDataDomain = [
   {
     id: 0,

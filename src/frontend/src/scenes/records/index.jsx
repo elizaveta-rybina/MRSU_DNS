@@ -2,45 +2,44 @@ import AddIcon from "@mui/icons-material/Add";
 import CancelIcon from "@mui/icons-material/Close";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import SaveIcon from "@mui/icons-material/Save";
 import { Box, useTheme } from "@mui/material";
 import Button from "@mui/material/Button";
-import { useNavigate  } from 'react-router-dom';
-import {
-  DataGrid,
-  GridActionsCellItem,
-  GridRowEditStopReasons,
-  GridRowModes,
-} from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem, GridRowModes } from "@mui/x-data-grid";
 import * as React from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import Header from "../../components/Header";
-import { mockDataDomain } from "../../data/mockData";
+import { mockDataRecord } from "../../data/mockData";
 import { tokens } from "../../theme";
+import { Utils } from "../../utils/handleClick";
 
 function EditToolbar(props) {
-  const { setRows, setRowModesModel, rows } = props;
+  const { setRows, setRowModesModel, filteredRows } = props;
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
   const handleClick = () => {
-    const maxId = rows.reduce((max, row) => (row.id > max ? row.id : max), 0);
+    const maxId = filteredRows.reduce((max, row) => (row.id > max ? row.id : max), 0);
     console.log(maxId);
-    const id = maxId + 1;
+    const id = maxId === 0 ? 0 : maxId + 1;
     setRows((oldRows) => [
       ...oldRows,
-      { id, name: "", admin: "", minimum: 0, isNew: true },
+      { id, type: "", value: "", priority: 0, ttl: 0, domainId: Number(useParams().id),  isNew: true },
     ]);
     setRowModesModel((oldModel) => ({
       ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
+      [id]: { mode: GridRowModes.Edit, fieldToFocus: "type" },
     }));
   };
 
+  const location = useLocation();
+  const { domainName } = location.state || {};
+
   return (
     <Box>
-      <Header title="Домены" subtitle="Управление доменами" />
+      <Header title="DNS-записи" subtitle={domainName} />
       <Button
         color="primary"
         startIcon={<AddIcon />}
@@ -51,87 +50,63 @@ function EditToolbar(props) {
           color: colors.grey[100],
         }}
       >
-        Добавить домен
+        Добавить запись
       </Button>
     </Box>
   );
 }
 
-const Domain = () => {
-  const [rows, setRows] = React.useState(mockDataDomain);
+const Record = () => {
+  const [rows, setRows] = React.useState(mockDataRecord);
   const [rowModesModel, setRowModesModel] = React.useState({});
-  const navigate = useNavigate();
+  const {
+    handleCancelClick,
+    handleDeleteClick,
+    handleEditClick,
+    handleRowModesModelChange,
+    handleSaveClick,
+    processRowUpdate,
+    handleRowEditStop,
+  } = Utils(rows, setRows);
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const handleButtonClick = (id) => {
-    const rowData = rows.find((row) => row.id === id);
-    const domainId = rowData.id;
-    const domainName = rowData.name;
-    navigate(`/records/${id}`, { state: { domainId, domainName } });
-  };
+  const { id } = useParams();
+  const [filteredRows, setFilteredRows] = useState([]);
 
-
-  const handleRowEditStop = (params, event) => {
-    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-      event.defaultMuiPrevented = true;
-    }
-  };
-
-  const handleEditClick = (id) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-  };
-
-  const handleSaveClick = (id) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-  };
-
-  const handleDeleteClick = (id) => () => {
-    setRows(rows.filter((row) => row.id !== id));
-  };
-
-  const handleCancelClick = (id) => () => {
-    setRowModesModel({
-      ...rowModesModel,
-      [id]: { mode: GridRowModes.View, ignoreModifications: true },
-    });
-
-    const editedRow = rows.find((row) => row.id === id);
-    if (editedRow.isNew) {
-      setRows(rows.filter((row) => row.id !== id));
-    }
-  };
-
-  const processRowUpdate = (newRow) => {
-    const updatedRow = { ...newRow, isNew: false };
-    setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-    return updatedRow;
-  };
-
-  const handleRowModesModelChange = (newRowModesModel) => {
-    setRowModesModel(newRowModesModel);
-  };
+  useEffect(() => {
+    const filtered = rows.filter((row) => row.domainId === Number(id));
+    setFilteredRows(filtered);
+  }, [id]);
 
   const columns = [
     { field: "id", headerName: "ID" },
     {
-      field: "name",
-      headerName: "Имя домена",
-      flex: 1,
-      editable: true,
-      cellClassName: "name-column--cell",
-    },
-    {
-      field: "admin",
-      headerName: "Владелец",
+      field: "type",
+      headerName: "Тип",
       type: "string",
       flex: 1,
       editable: true,
     },
     {
-      field: "minimum",
-      headerName: "Дата последнего изменения",
+      field: "value",
+      headerName: "Значение",
+      flex: 1,
+      type: "string",
+      editable: true,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "priority",
+      headerName: "Приоритет",
+      type: "number",
+      flex: 1,
+      editable: true,
+    },
+    {
+      field: "ttl",
+      headerName: "Время жизни",
       type: "number",
       flex: 1,
       editable: true,
@@ -153,13 +128,13 @@ const Domain = () => {
               sx={{
                 color: "primary.main",
               }}
-              onClick={handleSaveClick(id)}
+              onClick={() => handleSaveClick(id)} // Используем стрелочную функцию
             />,
             <GridActionsCellItem
               icon={<CancelIcon />}
               label="Cancel"
               className="textPrimary"
-              onClick={handleCancelClick(id)}
+              onClick={() => handleCancelClick(id)} // Используем стрелочную функцию
               color="inherit"
             />,
           ];
@@ -167,22 +142,16 @@ const Domain = () => {
 
         return [
           <GridActionsCellItem
-            icon={<InfoOutlinedIcon />}
-            label="Records"
-            onClick={() => handleButtonClick(id)}
-            color="inherit"
-          />,
-          <GridActionsCellItem
             icon={<EditOutlinedIcon />}
             label="Edit"
             className="textPrimary"
-            onClick={handleEditClick(id)}
+            onClick={() => handleEditClick(id)} // Используем стрелочную функцию
             color="inherit"
           />,
           <GridActionsCellItem
             icon={<DeleteOutlinedIcon />}
             label="Delete"
-            onClick={handleDeleteClick(id)}
+            onClick={() => handleDeleteClick(id)} // Используем стрелочную функцию
             color="inherit"
           />,
         ];
@@ -210,7 +179,7 @@ const Domain = () => {
     >
       <DataGrid
         checkboxSelection
-        rows={rows}
+        rows={filteredRows}
         columns={columns}
         editMode="row"
         rowModesModel={rowModesModel}
@@ -221,11 +190,11 @@ const Domain = () => {
           toolbar: EditToolbar,
         }}
         slotProps={{
-          toolbar: { setRows, setRowModesModel, rows},
+          toolbar: { setRows, setRowModesModel, filteredRows },
         }}
       />
     </Box>
   );
 };
 
-export default Domain;
+export default Record;

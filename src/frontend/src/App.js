@@ -12,12 +12,19 @@ import Sidebar from "./scenes/global/Sidebar";
 import Topbar from "./scenes/global/Topbar";
 // import Invoices from "./scenes/invoices";
 // import Line from "./scenes/line";
-// import Pie from "./scenes/pie";
+import Record from "./scenes/records"
+import Zona from "./scenes/zonas";
 import Domain from "./scenes/domains";
 import { ColorModeContext, useMode } from "./theme";
 
 function App() {
   const [theme, colorMode] = useMode();
+
+  const links = [
+    { id: 1, name: 'Page 1', data: 'This is the data for Page 1' },
+    { id: 2, name: 'Page 2', data: 'This is the data for Page 2' },
+    { id: 3, name: 'Page 3', data: 'This is the data for Page 3' },
+  ];
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -30,8 +37,9 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/domain" element={<Domain />} />
-              {/* <Route path="/contacts" element={<Contacts />} />
-              <Route path="/invoices" element={<Invoices />} />
+              <Route path="/zonas" element={<Zona />} />
+              <Route path="/records/:id" element={<Record />} />
+              {/* <Route path="/invoices" element={<Invoices />} />
               <Route path="/form" element={<Form />} />
               <Route path="/bar" element={<Bar />} />
               <Route path="/pie" element={<Pie />} />
