@@ -12,19 +12,13 @@ import Sidebar from "./scenes/global/Sidebar";
 import Topbar from "./scenes/global/Topbar";
 // import Invoices from "./scenes/invoices";
 // import Line from "./scenes/line";
-import Record from "./scenes/records"
-import Zona from "./scenes/zonas";
 import Domain from "./scenes/domains";
+import Record from "./scenes/records";
+import Zona from "./scenes/zonas";
 import { ColorModeContext, useMode } from "./theme";
 
 function App() {
   const [theme, colorMode] = useMode();
-
-  const links = [
-    { id: 1, name: 'Page 1', data: 'This is the data for Page 1' },
-    { id: 2, name: 'Page 2', data: 'This is the data for Page 2' },
-    { id: 3, name: 'Page 3', data: 'This is the data for Page 3' },
-  ];
 
   return (
     <ColorModeContext.Provider value={colorMode}>

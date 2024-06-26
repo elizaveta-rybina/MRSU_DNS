@@ -6,7 +6,6 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import SaveIcon from "@mui/icons-material/Save";
 import { Box, useTheme } from "@mui/material";
 import Button from "@mui/material/Button";
-import { useNavigate  } from 'react-router-dom';
 import {
   DataGrid,
   GridActionsCellItem,
@@ -14,16 +13,20 @@ import {
   GridRowModes,
 } from "@mui/x-data-grid";
 import * as React from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
-import { mockDataDomain } from "../../data/mockData";
 import { tokens } from "../../theme";
 
-function EditToolbar(props) {
-  const { setRows, setRowModesModel, rows } = props;
+import { useDispatch, useSelector } from "react-redux";
+import { deleteDomainsSuccess } from "../../redux/DomainSlice";
 
+function EditToolbar(props) {
+  const { setRows, setRowModesModel, rows, arrIds } = props;
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  const dispatch = useDispatch();
   const handleClick = () => {
     const maxId = rows.reduce((max, row) => (row.id > max ? row.id : max), 0);
     console.log(maxId);
@@ -36,6 +39,11 @@ function EditToolbar(props) {
       ...oldModel,
       [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
     }));
+  };
+
+  const handleDeleteAll = () => {
+    console.log(rows);
+    dispatch(deleteDomainsSuccess(arrIds));
   };
 
   return (
@@ -53,13 +61,31 @@ function EditToolbar(props) {
       >
         Добавить домен
       </Button>
+      <Button
+        color="primary"
+        startIcon={<DeleteOutlinedIcon />}
+        onClick={handleDeleteAll}
+        sx={{
+          margin: "20px 5px",
+          border: "1px solid",
+          color: colors.grey[100],
+        }}
+      >
+        Удалить домены
+      </Button>
     </Box>
   );
 }
 
 const Domain = () => {
-  const [rows, setRows] = React.useState(mockDataDomain);
   const [rowModesModel, setRowModesModel] = React.useState({});
+  const { domains, isFetch } = useSelector((state) => state.domain);
+  const [arrIds, setArrIds] = useState([]);
+  const [rows, setRows] = React.useState([]);
+
+  React.useEffect(() => {
+    setRows(domains);
+  }, [domains]); // Зависимость массива domains
   const navigate = useNavigate();
 
   const theme = useTheme();
@@ -71,7 +97,6 @@ const Domain = () => {
     const domainName = rowData.name;
     navigate(`/records/${id}`, { state: { domainId, domainName } });
   };
-
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -220,8 +245,11 @@ const Domain = () => {
         slots={{
           toolbar: EditToolbar,
         }}
+        onRowSelectionModelChange={(ids) => {
+          setArrIds(ids);
+        }}
         slotProps={{
-          toolbar: { setRows, setRowModesModel, rows},
+          toolbar: { setRows, setRowModesModel, rows, arrIds },
         }}
       />
     </Box>
