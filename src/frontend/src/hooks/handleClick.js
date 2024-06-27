@@ -2,13 +2,12 @@ import { GridRowModes } from "@mui/x-data-grid";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 
-export const Utils = (rows, setRows) => {
-  const [rowModesModel, setRowModesModel] = React.useState({});
-  const navigate = useNavigate();
+export const Utils = (rows, setRows, rowModesModel, setRowModesModel) => {
+  // const navigate = useNavigate();
 
-  const handleButtonClick = (id) => {
-    navigate(`/details/${id}`);
-  };
+  // const handleButtonClick = (id) => {
+  //   navigate(`/details/${id}`);
+  // };
 
   const handleEditClick = (id) => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });

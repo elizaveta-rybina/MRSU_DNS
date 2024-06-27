@@ -1,32 +1,42 @@
-import AddIcon from "@mui/icons-material/Add";
-import CancelIcon from "@mui/icons-material/Close";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import SaveIcon from "@mui/icons-material/Save";
 import { Box, useTheme } from "@mui/material";
-import Button from "@mui/material/Button";
 import { DataGrid, GridActionsCellItem, GridRowModes } from "@mui/x-data-grid";
+import { createSelector } from "@reduxjs/toolkit";
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
-import Header from "../../components/Header";
-import { mockDataRecord } from "../../data/mockData";
+import SaveCancelButtons from "../../components/Buttons/SaveCancelButtons";
+import Header from "../../components/Header/Header";
+import HeaderButtons from "../../components/Header/HeaderButtons";
+import { deleteRecordsSuccess } from "../../redux/slices/RecordSlice";
 import { tokens } from "../../theme";
-import { Utils } from "../../utils/handleClick";
+import useHelpers from "../../utils/helpers";
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel, filteredRows } = props;
 
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+  const dispatch = useDispatch();
 
   const handleClick = () => {
-    const maxId = filteredRows.reduce((max, row) => (row.id > max ? row.id : max), 0);
+    const maxId = filteredRows.reduce(
+      (max, row) => (row.id > max ? row.id : max),
+      0
+    );
     console.log(maxId);
     const id = maxId === 0 ? 0 : maxId + 1;
     setRows((oldRows) => [
       ...oldRows,
-      { id, type: "", value: "", priority: 0, ttl: 0, domainId: Number(useParams().id),  isNew: true },
+      {
+        id,
+        type: "",
+        value: "",
+        priority: 0,
+        ttl: 0,
+        domainId: Number(useParams().id),
+        isNew: true,
+      },
     ]);
     setRowModesModel((oldModel) => ({
       ...oldModel,
@@ -37,37 +47,42 @@ function EditToolbar(props) {
   const location = useLocation();
   const { domainName } = location.state || {};
 
+  const handleDeleteAll = () => {
+    dispatch(deleteRecordsSuccess(arrIds));
+  };
+
   return (
     <Box>
       <Header title="DNS-записи" subtitle={domainName} />
-      <Button
-        color="primary"
-        startIcon={<AddIcon />}
-        onClick={handleClick}
-        sx={{
-          margin: "20px 5px",
-          border: "1px solid",
-          color: colors.grey[100],
-        }}
-      >
-        Добавить запись
-      </Button>
+      <HeaderButtons
+        addInscription="Добавить запись"
+        deleteInscription="Удалить запись"
+        handleClick={handleClick}
+        handleDeleteAll={handleDeleteAll}
+      />
     </Box>
   );
 }
 
+const recordSelector = createSelector(
+  (state) => state.record,
+  (record) => record
+);
+
 const Record = () => {
-  const [rows, setRows] = React.useState(mockDataRecord);
+  const { records } = useSelector(recordSelector);
+  const [arrIds, setArrIds] = useState([]);
   const [rowModesModel, setRowModesModel] = React.useState({});
+  const [rows, setRows] = React.useState([]);
   const {
-    handleCancelClick,
-    handleDeleteClick,
-    handleEditClick,
-    handleRowModesModelChange,
-    handleSaveClick,
+    editClick,
+    deleteClick,
+    saveClick,
+    rowEditStop,
+    cancelClick,
     processRowUpdate,
-    handleRowEditStop,
-  } = Utils(rows, setRows);
+    rowModesModelChange,
+  } = useHelpers(rowModesModel, setRowModesModel, rows, setRows);
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -122,20 +137,10 @@ const Record = () => {
 
         if (isInEditMode) {
           return [
-            <GridActionsCellItem
-              icon={<SaveIcon />}
-              label="Save"
-              sx={{
-                color: "primary.main",
-              }}
-              onClick={() => handleSaveClick(id)} // Используем стрелочную функцию
-            />,
-            <GridActionsCellItem
-              icon={<CancelIcon />}
-              label="Cancel"
-              className="textPrimary"
-              onClick={() => handleCancelClick(id)} // Используем стрелочную функцию
-              color="inherit"
+            <SaveCancelButtons
+              id={id}
+              saveClick={saveClick}
+              cancelClick={cancelClick}
             />,
           ];
         }
@@ -145,13 +150,13 @@ const Record = () => {
             icon={<EditOutlinedIcon />}
             label="Edit"
             className="textPrimary"
-            onClick={() => handleEditClick(id)} // Используем стрелочную функцию
+            onClick={() => editClick(id)}
             color="inherit"
           />,
           <GridActionsCellItem
             icon={<DeleteOutlinedIcon />}
             label="Delete"
-            onClick={() => handleDeleteClick(id)} // Используем стрелочную функцию
+            onClick={() => deleteClick(id)}
             color="inherit"
           />,
         ];
@@ -183,14 +188,17 @@ const Record = () => {
         columns={columns}
         editMode="row"
         rowModesModel={rowModesModel}
-        onRowModesModelChange={handleRowModesModelChange}
-        onRowEditStop={handleRowEditStop}
+        onRowModesModelChange={rowModesModelChange}
+        onRowEditStop={rowEditStop}
         processRowUpdate={processRowUpdate}
         slots={{
           toolbar: EditToolbar,
         }}
+        onRowSelectionModelChange={(ids) => {
+          setArrIds(ids);
+        }}
         slotProps={{
-          toolbar: { setRows, setRowModesModel, filteredRows },
+          toolbar: { setRows, setRowModesModel, filteredRows, arrIds },
         }}
       />
     </Box>

@@ -7,12 +7,11 @@ import { createSelector } from "@reduxjs/toolkit";
 import * as React from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import SaveCancelButtons from "../../components/Buttons/SaveCancelButtons";
 import Header from "../../components/Header/Header";
 import HeaderButtons from "../../components/Header/HeaderButtons";
-import { deleteDomainsSuccess } from "../../redux/DomainSlice";
+import { deleteDomainsSuccess } from "../../redux/slices/DomainSlice";
 import { tokens } from "../../theme";
-
-import SaveCancelButtons from "../../components/Buttons/SaveCancelButtons";
 import useHelpers from "../../utils/helpers";
 
 function EditToolbar(props) {

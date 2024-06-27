@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { mockDataDomain } from '../data/mockData';
+import { mockDataDomain } from '../../data/mockData';
 
 const initialState = {
   domains: mockDataDomain,
