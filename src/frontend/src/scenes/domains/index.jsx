@@ -1,30 +1,22 @@
-import AddIcon from "@mui/icons-material/Add";
-import CancelIcon from "@mui/icons-material/Close";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import SaveIcon from "@mui/icons-material/Save";
 import { Box, useTheme } from "@mui/material";
-import Button from "@mui/material/Button";
-import {
-  DataGrid,
-  GridActionsCellItem,
-  GridRowEditStopReasons,
-  GridRowModes,
-} from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem, GridRowModes } from "@mui/x-data-grid";
+import { createSelector } from "@reduxjs/toolkit";
 import * as React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Header from "../../components/Header";
+import { useDispatch, useSelector } from "react-redux";
+import Header from "../../components/Header/Header";
+import HeaderButtons from "../../components/Header/HeaderButtons";
+import { deleteDomainsSuccess } from "../../redux/DomainSlice";
 import { tokens } from "../../theme";
 
-import { useDispatch, useSelector } from "react-redux";
-import { deleteDomainsSuccess } from "../../redux/DomainSlice";
+import SaveCancelButtons from "../../components/Buttons/SaveCancelButtons";
+import useHelpers from "../../utils/helpers";
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel, rows, arrIds } = props;
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
 
   const dispatch = useDispatch();
   const handleClick = () => {
@@ -35,6 +27,7 @@ function EditToolbar(props) {
       ...oldRows,
       { id, name: "", admin: "", minimum: 0, isNew: true },
     ]);
+    console.log(id);
     setRowModesModel((oldModel) => ({
       ...oldModel,
       [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
@@ -42,101 +35,52 @@ function EditToolbar(props) {
   };
 
   const handleDeleteAll = () => {
-    console.log(rows);
     dispatch(deleteDomainsSuccess(arrIds));
   };
 
   return (
     <Box>
       <Header title="Домены" subtitle="Управление доменами" />
-      <Button
-        color="primary"
-        startIcon={<AddIcon />}
-        onClick={handleClick}
-        sx={{
-          margin: "20px 5px",
-          border: "1px solid",
-          color: colors.grey[100],
-        }}
-      >
-        Добавить домен
-      </Button>
-      <Button
-        color="primary"
-        startIcon={<DeleteOutlinedIcon />}
-        onClick={handleDeleteAll}
-        sx={{
-          margin: "20px 5px",
-          border: "1px solid",
-          color: colors.grey[100],
-        }}
-      >
-        Удалить домены
-      </Button>
+      <HeaderButtons
+        addInscription="Добавить домен"
+        deleteInscription="Удалить домен"
+        handleClick={handleClick}
+        handleDeleteAll={handleDeleteAll}
+      />
     </Box>
   );
 }
 
+const domainSelector = createSelector(
+  (state) => state.domain,
+  (domain) => domain
+);
+
 const Domain = () => {
   const [rowModesModel, setRowModesModel] = React.useState({});
-  const { domains, isFetch } = useSelector((state) => state.domain);
+  const { domains } = useSelector(domainSelector);
   const [arrIds, setArrIds] = useState([]);
   const [rows, setRows] = React.useState([]);
 
+  //TODO: спросить можно ли так много передавать параметров и можно ли сделать лучше (может через пропсы)
+
+  const {
+    infoClick,
+    editClick,
+    deleteClick,
+    rowEditStop,
+    saveClick,
+    cancelClick,
+    processRowUpdate,
+    rowModesModelChange,
+  } = useHelpers(rowModesModel, setRowModesModel, rows, setRows);
+
   React.useEffect(() => {
     setRows(domains);
-  }, [domains]); // Зависимость массива domains
-  const navigate = useNavigate();
+  }, [domains]);
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-
-  const handleButtonClick = (id) => {
-    const rowData = rows.find((row) => row.id === id);
-    const domainId = rowData.id;
-    const domainName = rowData.name;
-    navigate(`/records/${id}`, { state: { domainId, domainName } });
-  };
-
-  const handleRowEditStop = (params, event) => {
-    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-      event.defaultMuiPrevented = true;
-    }
-  };
-
-  const handleEditClick = (id) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-  };
-
-  const handleSaveClick = (id) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-  };
-
-  const handleDeleteClick = (id) => () => {
-    setRows(rows.filter((row) => row.id !== id));
-  };
-
-  const handleCancelClick = (id) => () => {
-    setRowModesModel({
-      ...rowModesModel,
-      [id]: { mode: GridRowModes.View, ignoreModifications: true },
-    });
-
-    const editedRow = rows.find((row) => row.id === id);
-    if (editedRow.isNew) {
-      setRows(rows.filter((row) => row.id !== id));
-    }
-  };
-
-  const processRowUpdate = (newRow) => {
-    const updatedRow = { ...newRow, isNew: false };
-    setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-    return updatedRow;
-  };
-
-  const handleRowModesModelChange = (newRowModesModel) => {
-    setRowModesModel(newRowModesModel);
-  };
 
   const columns = [
     { field: "id", headerName: "ID" },
@@ -172,20 +116,10 @@ const Domain = () => {
 
         if (isInEditMode) {
           return [
-            <GridActionsCellItem
-              icon={<SaveIcon />}
-              label="Save"
-              sx={{
-                color: "primary.main",
-              }}
-              onClick={handleSaveClick(id)}
-            />,
-            <GridActionsCellItem
-              icon={<CancelIcon />}
-              label="Cancel"
-              className="textPrimary"
-              onClick={handleCancelClick(id)}
-              color="inherit"
+            <SaveCancelButtons
+              id={id}
+              saveClick={saveClick}
+              cancelClick={cancelClick}
             />,
           ];
         }
@@ -194,20 +128,20 @@ const Domain = () => {
           <GridActionsCellItem
             icon={<InfoOutlinedIcon />}
             label="Records"
-            onClick={() => handleButtonClick(id)}
+            onClick={() => infoClick(id)}
             color="inherit"
           />,
           <GridActionsCellItem
             icon={<EditOutlinedIcon />}
             label="Edit"
             className="textPrimary"
-            onClick={handleEditClick(id)}
+            onClick={() => editClick(id)}
             color="inherit"
           />,
           <GridActionsCellItem
             icon={<DeleteOutlinedIcon />}
             label="Delete"
-            onClick={handleDeleteClick(id)}
+            onClick={() => deleteClick(id)}
             color="inherit"
           />,
         ];
@@ -239,8 +173,8 @@ const Domain = () => {
         columns={columns}
         editMode="row"
         rowModesModel={rowModesModel}
-        onRowModesModelChange={handleRowModesModelChange}
-        onRowEditStop={handleRowEditStop}
+        onRowModesModelChange={rowModesModelChange}
+        onRowEditStop={rowEditStop}
         processRowUpdate={processRowUpdate}
         slots={{
           toolbar: EditToolbar,
