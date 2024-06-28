@@ -21,7 +21,7 @@ function EditToolbar(props) {
   const handleClick = () => {
     const maxId = rows.reduce((max, row) => (row.id > max ? row.id : max), 0);
     console.log(maxId);
-    const id = maxId + 1;
+    const id = maxId === 0 ? 0 : maxId + 1;
     setRows((oldRows) => [
       ...oldRows,
       { id, name: "", admin: "", minimum: 0, isNew: true },
@@ -65,7 +65,6 @@ const Domain = () => {
 
   const {
     infoClick,
-    editClick,
     deleteClick,
     rowEditStop,
     saveClick,
@@ -128,13 +127,6 @@ const Domain = () => {
             icon={<InfoOutlinedIcon />}
             label="Records"
             onClick={() => infoClick(id)}
-            color="inherit"
-          />,
-          <GridActionsCellItem
-            icon={<EditOutlinedIcon />}
-            label="Edit"
-            className="textPrimary"
-            onClick={() => editClick(id)}
             color="inherit"
           />,
           <GridActionsCellItem

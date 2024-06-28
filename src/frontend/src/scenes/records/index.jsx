@@ -29,7 +29,7 @@ const EditToolbar = React.memo(function EditToolbar({
 
   const handleClick = useCallback(() => {
     const maxId = rows.reduce((max, row) => (row.id > max ? row.id : max), 0);
-    const id = maxId + 1;
+    const id = maxId === 0 ? 0 : maxId + 1;
     setRows((oldRows) => [
       ...oldRows,
       {
@@ -119,9 +119,10 @@ const Record = () => {
       {
         field: "type",
         headerName: "Тип",
-        type: "string",
+        type: "singleSelect",
         flex: 1,
         editable: true,
+        valueOptions: ["A", "MX", "CNAME", "SRV", "TXT"],
       },
       {
         field: "value",
