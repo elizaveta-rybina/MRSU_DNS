@@ -1,10 +1,11 @@
+
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { Box, useTheme } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridRowModes } from "@mui/x-data-grid";
 import { createSelector } from "@reduxjs/toolkit";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import SaveCancelButtons from "../../components/Buttons/SaveCancelButtons";
@@ -14,18 +15,23 @@ import { deleteRecordsSuccess } from "../../redux/slices/RecordSlice";
 import { tokens } from "../../theme";
 import useHelpers from "../../utils/helpers";
 
-function EditToolbar(props) {
-  const { setRows, setRowModesModel, filteredRows } = props;
 
+// EditToolbar component
+const EditToolbar = React.memo(function EditToolbar({
+  setRows,
+  setRowModesModel,
+  rows,
+  arrIds,
+}) {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const { domainName } = location.state || {};
 
-  const handleClick = () => {
-    const maxId = filteredRows.reduce(
-      (max, row) => (row.id > max ? row.id : max),
-      0
-    );
-    console.log(maxId);
-    const id = maxId === 0 ? 0 : maxId + 1;
+  console.log("рендеринг компонента EditToolbar");
+
+  const handleClick = useCallback(() => {
+    const maxId = rows.reduce((max, row) => (row.id > max ? row.id : max), 0);
+    const id = maxId + 1;
     setRows((oldRows) => [
       ...oldRows,
       {
@@ -34,7 +40,7 @@ function EditToolbar(props) {
         value: "",
         priority: 0,
         ttl: 0,
-        domainId: Number(useParams().id),
+        domainId: 0, // исправить на нормальное
         isNew: true,
       },
     ]);
@@ -42,14 +48,11 @@ function EditToolbar(props) {
       ...oldModel,
       [id]: { mode: GridRowModes.Edit, fieldToFocus: "type" },
     }));
-  };
+  }, [rows, setRows, setRowModesModel]);
 
-  const location = useLocation();
-  const { domainName } = location.state || {};
-
-  const handleDeleteAll = () => {
+  const handleDeleteAll = useCallback(() => {
     dispatch(deleteRecordsSuccess(arrIds));
-  };
+  }, [dispatch, arrIds]);
 
   return (
     <Box>
@@ -62,18 +65,24 @@ function EditToolbar(props) {
       />
     </Box>
   );
-}
+});
 
-const recordSelector = createSelector(
-  (state) => state.record,
-  (record) => record
+// Selector to filter records by domainId
+const selectRecords = (state) => state.record.records;
+const selectDomainId = (_, id) => Number(id);
+
+const filteredRecordsSelector = createSelector(
+  [selectRecords, selectDomainId],
+  (records, domainId) =>
+    records.filter((record) => record.domainId === domainId)
 );
 
 const Record = () => {
-  const { records } = useSelector(recordSelector);
+  const { id } = useParams();
+  const records = useSelector((state) => filteredRecordsSelector(state, id));
   const [arrIds, setArrIds] = useState([]);
-  const [rowModesModel, setRowModesModel] = React.useState({});
-  const [rows, setRows] = React.useState([]);
+  const [rowModesModel, setRowModesModel] = useState({});
+  const [rows, setRows] = useState(records);
   const {
     editClick,
     deleteClick,
@@ -83,86 +92,86 @@ const Record = () => {
     processRowUpdate,
     rowModesModelChange,
   } = useHelpers(rowModesModel, setRowModesModel, rows, setRows);
-
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const { id } = useParams();
-  const [filteredRows, setFilteredRows] = useState([]);
+  console.log("рендеринг компонента Record");
 
-  useEffect(() => {
-    const filtered = rows.filter((row) => row.domainId === Number(id));
-    setFilteredRows(filtered);
-  }, [id]);
+  React.useEffect(() => {
+    setRows(records);
+  }, [records]);
 
-  const columns = [
-    { field: "id", headerName: "ID" },
-    {
-      field: "type",
-      headerName: "Тип",
-      type: "string",
-      flex: 1,
-      editable: true,
-    },
-    {
-      field: "value",
-      headerName: "Значение",
-      flex: 1,
-      type: "string",
-      editable: true,
-      cellClassName: "name-column--cell",
-    },
-    {
-      field: "priority",
-      headerName: "Приоритет",
-      type: "number",
-      flex: 1,
-      editable: true,
-    },
-    {
-      field: "ttl",
-      headerName: "Время жизни",
-      type: "number",
-      flex: 1,
-      editable: true,
-    },
-    {
-      field: "actions",
-      type: "actions",
-      headerName: "Действия",
-      width: 100,
-      cellClassName: "actions",
-      getActions: ({ id }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+  const columns = React.useMemo(
+    () => [
+      { field: "id", headerName: "ID" },
+      {
+        field: "type",
+        headerName: "Тип",
+        type: "string",
+        flex: 1,
+        editable: true,
+      },
+      {
+        field: "value",
+        headerName: "Значение",
+        flex: 1,
+        type: "string",
+        editable: true,
+        cellClassName: "name-column--cell",
+      },
+      {
+        field: "priority",
+        headerName: "Приоритет",
+        type: "number",
+        flex: 1,
+        editable: true,
+      },
+      {
+        field: "ttl",
+        headerName: "Время жизни",
+        type: "number",
+        flex: 1,
+        editable: true,
+      },
+      {
+        field: "actions",
+        type: "actions",
+        headerName: "Действия",
+        width: 100,
+        cellClassName: "actions",
+        getActions: ({ id }) => {
+          const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
-        if (isInEditMode) {
+          if (isInEditMode) {
+            return [
+              <SaveCancelButtons
+                id={id}
+                saveClick={saveClick}
+                cancelClick={cancelClick}
+              />,
+            ];
+          }
+
           return [
-            <SaveCancelButtons
-              id={id}
-              saveClick={saveClick}
-              cancelClick={cancelClick}
+            <GridActionsCellItem
+              icon={<EditOutlinedIcon />}
+              label="Edit"
+              className="textPrimary"
+              onClick={() => editClick(id)}
+              color="inherit"
+            />,
+            <GridActionsCellItem
+              icon={<DeleteOutlinedIcon />}
+              label="Delete"
+              onClick={() => deleteClick(id)}
+              color="inherit"
             />,
           ];
-        }
-
-        return [
-          <GridActionsCellItem
-            icon={<EditOutlinedIcon />}
-            label="Edit"
-            className="textPrimary"
-            onClick={() => editClick(id)}
-            color="inherit"
-          />,
-          <GridActionsCellItem
-            icon={<DeleteOutlinedIcon />}
-            label="Delete"
-            onClick={() => deleteClick(id)}
-            color="inherit"
-          />,
-        ];
+        },
       },
-    },
-  ];
+    ],
+    [rowModesModel, editClick, deleteClick, saveClick, cancelClick]
+  );
 
   return (
     <Box
@@ -184,7 +193,7 @@ const Record = () => {
     >
       <DataGrid
         checkboxSelection
-        rows={filteredRows}
+        rows={rows}
         columns={columns}
         editMode="row"
         rowModesModel={rowModesModel}
@@ -198,7 +207,7 @@ const Record = () => {
           setArrIds(ids);
         }}
         slotProps={{
-          toolbar: { setRows, setRowModesModel, filteredRows, arrIds },
+          toolbar: { setRows, setRowModesModel, rows, arrIds },
         }}
       />
     </Box>
