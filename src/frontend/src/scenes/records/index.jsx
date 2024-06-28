@@ -5,6 +5,7 @@ import { DataGrid, GridActionsCellItem, GridRowModes } from "@mui/x-data-grid";
 import { createSelector } from "@reduxjs/toolkit";
 import * as React from "react";
 import { useCallback, useState } from "react";
+import InputMask from "react-input-mask";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import SaveCancelButtons from "../../components/Buttons/SaveCancelButtons";
@@ -14,6 +15,7 @@ import BasicModal from "../../components/Modal/Modal";
 import { deleteRecordsSuccess } from "../../redux/slices/RecordSlice";
 import { tokens } from "../../theme";
 import useHelpers from "../../utils/helpers";
+
 // EditToolbar component
 const EditToolbar = React.memo(function EditToolbar({
   setRows,
@@ -24,8 +26,6 @@ const EditToolbar = React.memo(function EditToolbar({
   const dispatch = useDispatch();
   const location = useLocation();
   const { domainName } = location.state || {};
-
-  console.log("рендеринг компонента EditToolbar");
 
   const handleClick = useCallback(() => {
     const maxId = rows.reduce((max, row) => (row.id > max ? row.id : max), 0);
@@ -107,15 +107,13 @@ const Record = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  console.log("рендеринг компонента Record");
-
   React.useEffect(() => {
     setRows(records);
   }, [records]);
 
   const columns = React.useMemo(
     () => [
-      { field: "id", headerName: "ID" },
+      { field: "id", headerName: "Запись" },
       {
         field: "type",
         headerName: "Тип",
@@ -123,14 +121,6 @@ const Record = () => {
         flex: 1,
         editable: true,
         valueOptions: ["A", "MX", "CNAME", "SRV", "TXT"],
-      },
-      {
-        field: "value",
-        headerName: "Значение",
-        flex: 1,
-        type: "string",
-        editable: true,
-        cellClassName: "name-column--cell",
       },
       {
         field: "priority",
@@ -145,6 +135,24 @@ const Record = () => {
         type: "number",
         flex: 1,
         editable: true,
+      },
+      {
+        field: "value",
+        headerName: "IP адрес или значение",
+        flex: 1,
+        type: "string",
+        editable: true,
+        cellClassName: "name-column--cell",
+        renderEditCell: (params) => {
+          if (params.row.type === "A") {
+            return (
+              <InputMask
+                mask="128.128.128.128"
+                value={params.row.value}
+              ></InputMask>
+            );
+          }
+        },
       },
       {
         field: "actions",
