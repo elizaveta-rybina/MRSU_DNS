@@ -194,6 +194,10 @@ export const themeSettings = (mode) => {
         fontFamily: ["Open Sans", "sans-serif"].join(","),
         fontSize: 14,
       },
+      code: {
+        fontFamily: ["Source Code Pro", "monospace"].join(","),
+        fontSize: 16,
+      },
     },
   };
 };

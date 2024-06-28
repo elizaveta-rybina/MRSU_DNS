@@ -1,4 +1,3 @@
-
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { Box, useTheme } from "@mui/material";
@@ -11,11 +10,10 @@ import { useLocation, useParams } from "react-router-dom";
 import SaveCancelButtons from "../../components/Buttons/SaveCancelButtons";
 import Header from "../../components/Header/Header";
 import HeaderButtons from "../../components/Header/HeaderButtons";
+import BasicModal from "../../components/Modal/Modal";
 import { deleteRecordsSuccess } from "../../redux/slices/RecordSlice";
 import { tokens } from "../../theme";
 import useHelpers from "../../utils/helpers";
-
-
 // EditToolbar component
 const EditToolbar = React.memo(function EditToolbar({
   setRows,
@@ -57,12 +55,26 @@ const EditToolbar = React.memo(function EditToolbar({
   return (
     <Box>
       <Header title="DNS-записи" subtitle={domainName} />
-      <HeaderButtons
-        addInscription="Добавить запись"
-        deleteInscription="Удалить запись"
-        handleClick={handleClick}
-        handleDeleteAll={handleDeleteAll}
-      />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row", // или просто `row` по умолчанию
+          alignItems: "center", // для выравнивания по вертикали (опционально)
+          justifyContent: "space-between", // для распределения пространства между элементами (опционально)
+        }}
+      >
+        <HeaderButtons
+          addInscription="Добавить запись"
+          deleteInscription="Удалить запись"
+          handleClick={handleClick}
+          handleDeleteAll={handleDeleteAll}
+        />
+        <BasicModal
+          fileInscription={"Просмотр файла зоны"}
+          title={"Файл зоны для домена "}
+          subtitle={domainName}
+        />
+      </Box>
     </Box>
   );
 });
