@@ -15,6 +15,7 @@ import Topbar from "./scenes/global/Topbar";
 import Domain from "./scenes/domains";
 import Record from "./scenes/records";
 import Zona from "./scenes/zonas";
+import User from "./scenes/users"
 import { ColorModeContext, useMode } from "./theme";
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
               <Route path="/domain" element={<Domain />} />
               <Route path="/zonas" element={<Zona />} />
               <Route path="/records/:id" element={<Record />} />
+              <Route path='/users' element={<User />} />
               {/* <Route path="/invoices" element={<Invoices />} />
               <Route path="/form" element={<Form />} />
               <Route path="/bar" element={<Bar />} />
