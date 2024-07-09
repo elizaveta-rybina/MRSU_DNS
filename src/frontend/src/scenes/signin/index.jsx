@@ -6,12 +6,12 @@ import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
-import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/system";
 import * as React from "react";
+import { Link } from "react-router-dom";
 import { tokens } from "../../theme";
 
 const CustomTextField = styled(TextField)(({ theme, colors }) => ({
@@ -37,6 +37,9 @@ const CustomTextField = styled(TextField)(({ theme, colors }) => ({
         transition: "background-color 5000s ease-in-out 0s",
       },
     },
+  },
+  [theme.breakpoints.down("sm")]: {
+    width: "100%", // на маленьких экранах ширина 100%
   },
 }));
 
@@ -67,8 +70,10 @@ export default function SignInSide() {
       <Grid
         item
         xs={10}
-        sm={7}
-        md={4}
+        sm={8}
+        md={6}
+        lg={5}
+        xl={4}
         component={Paper}
         bgcolor={colors.primary[400]}
         elevation={2}
@@ -84,19 +89,43 @@ export default function SignInSide() {
         <Box
           sx={{
             my: 4,
-            mx: 4,
+            mx: 2,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            [theme.breakpoints.up("md")]: {
+              mx: 4, // Отступы для md и больше
+            },
           }}
         >
           <Avatar
-            sx={{ m: 2, bgcolor: "secondary.main", width: 60, height: 60 }}
+            sx={{
+              display: "none",
+              [theme.breakpoints.up("sm")]: {
+                display: "block",
+                m: 2,
+                bgcolor: "secondary.main",
+                width: 60,
+                height: 60,
+                display: "flex",
+                alignItems: "center",
+              },
+            }}
           >
-            <LockOutlinedIcon />
+            <LockOutlinedIcon sx={{ fontSize: 30 }} />
           </Avatar>
 
-          <Typography color={colors.primary[100]} component="h1" variant="h1">
+          <Typography
+            color={colors.primary[100]}
+            variant="h1"
+            component="h1"
+            sx={{
+              fontSize: "h2.fontSize", // Используем размер шрифта для h1 из темы по умолчанию
+              [theme.breakpoints.up("lg")]: {
+                fontSize: "h1.fontSize", // Изменяем размер шрифта для h4 на больших экранах
+              },
+            }}
+          >
             Вход
           </Typography>
           <Box
@@ -152,34 +181,46 @@ export default function SignInSide() {
             >
               Войти
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link
-                  href="#"
-                  variant="body2"
-                  sx={{
-                    color: colors.primary[200],
-                    textDecoration: "underline",
-                    "&:hover": { color: colors.primary[100] },
-                    transition: "color 0.3s ease",
-                  }}
-                >
-                  Забыли пароль?
-                </Link>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={6} sx={{ textAlign: "left" }}>
+                <Typography variant="body2" component="span">
+                  <Link
+                    to="/foggotpsw"
+                    style={{
+                      color: colors.primary[200], // Цвет текста ссылки
+                      textDecoration: "underline", // Подчеркивание при наведении
+                      transition: "color 0.3s ease", // Плавное изменение цвета
+                    }}
+                    className="custom-link"
+                  >
+                    Забыли пароль?
+                  </Link>
+                </Typography>
               </Grid>
-              <Grid item>
-                <Link
-                  href="#"
-                  variant="body2"
-                  sx={{
-                    color: colors.primary[200],
-                    textDecoration: "underline",
-                    "&:hover": { color: colors.primary[100] },
-                    transition: "color 0.3s ease",
-                  }}
-                >
-                  {"Нет аккаунта? Зарегистрируйтесь!"}
-                </Link>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                sx={{
+                  textAlign: "left",
+                  [theme.breakpoints.up("sm")]: {
+                    textAlign: "right",
+                  },
+                }}
+              >
+                <Typography variant="body2" component="span">
+                  <Link
+                    to="/signup"
+                    style={{
+                      color: colors.primary[200], // Цвет текста ссылки
+                      textDecoration: "underline", // Подчеркивание при наведении
+                      transition: "color 0.3s ease", // Плавное изменение цвета
+                    }}
+                    className="custom-link"
+                  >
+                    {"Нет аккаунта? Зарегистрируйтесь!"}
+                  </Link>
+                </Typography>
               </Grid>
             </Grid>
           </Box>
