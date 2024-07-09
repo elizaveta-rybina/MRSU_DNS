@@ -10,8 +10,35 @@ import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { styled } from "@mui/system";
 import * as React from "react";
 import { tokens } from "../../theme";
+
+const CustomTextField = styled(TextField)(({ theme, colors }) => ({
+  "& label.Mui-focused": {
+    color: colors.primary[100], // цвет текста лейбла при фокусе
+  },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: colors.primary[200],
+    },
+    "&:hover fieldset": {
+      borderColor: colors.primary[100],
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: colors.primary[100],
+    },
+    "& .MuiInputBase-input": {
+      color: colors.primary[100], // Цвет текста
+      backgroundColor: "transparent", // Прозрачный фон
+      "&:-webkit-autofill": {
+        WebkitBoxShadow: "0 0 0 100px transparent inset", // Убирает цвет фона для автозаполнения
+        WebkitTextFillColor: colors.primary[100], // Цвет текста для автозаполнения
+        transition: "background-color 5000s ease-in-out 0s",
+      },
+    },
+  },
+}));
 
 export default function SignInSide() {
   const handleSubmit = (event) => {
@@ -43,6 +70,7 @@ export default function SignInSide() {
         sm={7}
         md={4}
         component={Paper}
+        bgcolor={colors.primary[400]}
         elevation={2}
         sx={{
           borderRadius: 2,
@@ -55,21 +83,20 @@ export default function SignInSide() {
       >
         <Box
           sx={{
-            my: 6,
-            mx: 5,
+            my: 4,
+            mx: 4,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            bgcolor: ""
           }}
         >
           <Avatar
-            sx={{ m: 1, bgcolor: "secondary.main", width: 56, height: 56 }}
+            sx={{ m: 2, bgcolor: "secondary.main", width: 60, height: 60 }}
           >
             <LockOutlinedIcon />
           </Avatar>
 
-          <Typography component="h1" variant="h1">
+          <Typography color={colors.primary[100]} component="h1" variant="h1">
             Вход
           </Typography>
           <Box
@@ -78,7 +105,8 @@ export default function SignInSide() {
             onSubmit={handleSubmit}
             sx={{ mt: 1 }}
           >
-            <TextField
+            <CustomTextField
+              colors={colors}
               margin="normal"
               required
               fullWidth
@@ -88,7 +116,8 @@ export default function SignInSide() {
               autoComplete="email"
               autoFocus
             />
-            <TextField
+            <CustomTextField
+              colors={colors}
               margin="normal"
               required
               fullWidth
@@ -99,25 +128,56 @@ export default function SignInSide() {
               autoComplete="current-password"
             />
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={
+                <Checkbox
+                  value="remember"
+                  sx={{
+                    color: colors.primary[200],
+                    "&.Mui-checked": { color: colors.primary[100] },
+                  }}
+                />
+              }
               label="Запомнить меня"
+              sx={{
+                color: colors.primary[200],
+                "&:hover": { color: colors.primary[100] },
+                transition: "color 0.3s ease",
+              }}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 2, mb: 2, p: 1.5 }}
             >
               Войти
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
+                <Link
+                  href="#"
+                  variant="body2"
+                  sx={{
+                    color: colors.primary[200],
+                    textDecoration: "underline",
+                    "&:hover": { color: colors.primary[100] },
+                    transition: "color 0.3s ease",
+                  }}
+                >
                   Забыли пароль?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link
+                  href="#"
+                  variant="body2"
+                  sx={{
+                    color: colors.primary[200],
+                    textDecoration: "underline",
+                    "&:hover": { color: colors.primary[100] },
+                    transition: "color 0.3s ease",
+                  }}
+                >
                   {"Нет аккаунта? Зарегистрируйтесь!"}
                 </Link>
               </Grid>
