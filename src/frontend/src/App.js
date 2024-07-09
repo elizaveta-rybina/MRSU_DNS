@@ -7,7 +7,7 @@ import { ColorModeContext, useMode } from "./theme";
 function App() {
   const [theme, colorMode] = useMode();
 
-  const token = false;
+  const token = true;
 
   return (
     <ColorModeContext.Provider value={colorMode}>

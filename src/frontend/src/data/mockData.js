@@ -1,18 +1,4 @@
-/*
- * @property int $id
- * @property string $name
- * @property int $ttl
- * @property int $timeout
- * @property string $soa
- * @property string $admin
- * @property int $serial
- * @property int $refresh
- * @property int $retry
- * @property int $expire
- * @property int $minimum
- * @property int $created_at
- * @property int $updated_at
- */
+import { randomUpdatedDate } from "@mui/x-data-grid-generator";
 
 export const mockDataRecord = [
   {
@@ -78,6 +64,7 @@ export const mockDataDomain = [
     retry: 7200,
     expire: 1209600,
     minimum: 86400,
+    dateUpdated: randomUpdatedDate(),
   },
   {
     id: 1,
@@ -91,6 +78,7 @@ export const mockDataDomain = [
     retry: 7200,
     expire: 1209600,
     minimum: 86400,
+    dateUpdated: randomUpdatedDate(),
   },
   {
     id: 2,
@@ -104,6 +92,7 @@ export const mockDataDomain = [
     retry: 7200,
     expire: 1209600,
     minimum: 86400,
+    dateUpdated: randomUpdatedDate(),
   },
   {
     id: 3,
@@ -117,6 +106,7 @@ export const mockDataDomain = [
     retry: 7200,
     expire: 1209600,
     minimum: 86400,
+    dateUpdated: randomUpdatedDate(),
   },
   {
     id: 4,
@@ -130,6 +120,7 @@ export const mockDataDomain = [
     retry: 7200,
     expire: 1209600,
     minimum: 86400,
+    dateUpdated: randomUpdatedDate(),
   },
   {
     id: 5,
@@ -143,6 +134,7 @@ export const mockDataDomain = [
     retry: 7200,
     expire: 1209600,
     minimum: 86400,
+    dateUpdated: randomUpdatedDate(),
   },
   {
     id: 6,
@@ -156,6 +148,7 @@ export const mockDataDomain = [
     retry: 7200,
     expire: 1209600,
     minimum: 86400,
+    dateUpdated: randomUpdatedDate(),
   },
 ];
 
@@ -230,7 +223,7 @@ export const mockDataUsers = [
     role: "читатель",
     created_at: "2023-01-15T10:00:00Z",
     last_login: "2023-07-04T08:30:00Z",
-    status:  true,
+    status: true,
   },
   {
     id: 67890,
@@ -240,7 +233,67 @@ export const mockDataUsers = [
     role: "редактор",
     created_at: "2022-08-10T14:45:00Z",
     last_login: "2023-06-20T12:20:00Z",
-    status:  false,
+    status: false,
+  },
+  {
+    id: 12345,
+    first_name: "Иван",
+    last_name: "Петров",
+    email: "ivan.petrov@example.com",
+    role: "администратор",
+    created_at: "2021-10-05T08:30:00Z",
+    last_login: "2023-07-01T15:10:00Z",
+    status: true,
+  },
+  {
+    id: 54321,
+    first_name: "Елена",
+    last_name: "Козлова",
+    email: "elena.kozlova@example.com",
+    role: "пользователь",
+    created_at: "2022-01-15T18:20:00Z",
+    last_login: "2023-07-05T09:45:00Z",
+    status: true,
+  },
+  {
+    id: 56789,
+    first_name: "Андрей",
+    last_name: "Петров",
+    email: "andrey.petrov@example.com",
+    role: "администратор",
+    created_at: "2022-06-10T08:30:00Z",
+    last_login: "2023-07-15T15:10:00Z",
+    status: true,
+  },
+  {
+    id: 67890,
+    first_name: "Ольга",
+    last_name: "Новинова",
+    email: "olga.novikova@example.com",
+    role: "пользователь",
+    created_at: "2022-07-20T18:20:00Z",
+    last_login: "2023-07-20T09:45:00Z",
+    status: false,
+  },
+  {
+    id: 78901,
+    first_name: "Сергей",
+    last_name: "Смирнов",
+    email: "sergey.smirnov@example.com",
+    role: "модератор",
+    created_at: "2022-08-05T11:55:00Z",
+    last_login: "2023-07-25T17:30:00Z",
+    status: true,
+  },
+  {
+    id: 98765,
+    first_name: "Павел",
+    last_name: "Иванов",
+    email: "pavel.ivanov@example.com",
+    role: "модератор",
+    created_at: "2022-03-25T11:55:00Z",
+    last_login: "2023-06-30T17:30:00Z",
+    status: false,
   },
   {
     id: 11223,
@@ -250,7 +303,7 @@ export const mockDataUsers = [
     role: "администратор",
     created_at: "2021-05-22T09:00:00Z",
     last_login: "2023-07-01T11:15:00Z",
-    status:  true,
+    status: true,
   },
   {
     id: 33445,
@@ -260,7 +313,7 @@ export const mockDataUsers = [
     role: "читатель",
     created_at: "2022-09-15T13:30:00Z",
     last_login: "2023-07-03T10:45:00Z",
-    status:  true,
+    status: true,
   },
   {
     id: 55667,
@@ -270,7 +323,7 @@ export const mockDataUsers = [
     role: "редактор",
     created_at: "2020-12-05T16:20:00Z",
     last_login: "2023-06-25T14:55:00Z",
-    status:  false,
+    status: false,
   },
   {
     id: 77889,
@@ -280,7 +333,7 @@ export const mockDataUsers = [
     role: "редактор",
     created_at: "2023-02-18T11:40:00Z",
     last_login: "2023-07-02T09:25:00Z",
-    status:  true,
+    status: true,
   },
   {
     id: 99001,
@@ -290,6 +343,6 @@ export const mockDataUsers = [
     role: "администратор",
     created_at: "2019-11-30T08:15:00Z",
     last_login: "2023-07-03T13:35:00Z",
-    status:  true,
+    status: true,
   },
 ];

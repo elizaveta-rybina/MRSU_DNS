@@ -14,7 +14,7 @@ function Main() {
       <main className="content">
         <Topbar />
         <Routes>
-          <Route path="/main" element={<Dashboard />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/domain" element={<Domain />} />
           <Route path="/zonas" element={<Zona />} />
           <Route path="/records/:id" element={<Record />} />
