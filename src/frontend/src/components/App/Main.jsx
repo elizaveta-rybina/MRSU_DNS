@@ -16,7 +16,7 @@ function Main() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/domain" element={<Domain />} />
-          <Route path="/zonas" element={<Zona />} />
+          <Route path="/zona" element={<Zona />} />
           <Route path="/records/:id" element={<Record />} />
           <Route path="/users" element={<User />} />
         </Routes>
