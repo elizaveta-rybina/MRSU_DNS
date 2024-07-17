@@ -47,10 +47,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "eslint": "^9.5.0",
-    "eslint-plugin-jest": "^28.6.0",
-    "redux-devtools": "^3.7.0"
   }
 }

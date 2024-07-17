@@ -9,39 +9,72 @@ const CustomBox = ({ mr, icon, title, link }) => {
   return (
     <Box
       sx={{
-        // "& .MuiDataGrid-root": {
-        //   border: colors.primary[500],
-        // },
-        // border: "1px solid",
         borderRadius: "30px",
         display: "flex",
         justifyContent: "center",
         flexDirection: "column",
         textAlign: "center",
         bgcolor: colors.primary[400],
-        flex: "calc(50% - 8px)", // 50% ширины контейнера минус отступы
-        mr, // Отступ справа
+        // 50% ширины контейнера минус отступы
+        mr,
+        [theme.breakpoints.up("sm")]: {
+          flex: "calc(40% - 8px)",
+        },
+        [theme.breakpoints.up("md")]: {
+          flex: "calc(40% - 8px)",
+        },
+        [theme.breakpoints.up("lg")]: {
+          flex: "calc(50% - 8px)",
+        },
       }}
     >
       <Icon
         sx={{
           display: "none",
+          margin: "0 auto",
+          bgcolor: "background.default",
+
+          //TODO
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           [theme.breakpoints.up("sm")]: {
             display: "block",
-            margin: "0 auto",
-            borderRadius: "25px", //TODO
-            bgcolor: "background.default",
-            width: 100,
-            height: 100,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            width: 50,
+            height: 50,
+            borderRadius: "15px", //TODO
+          },
+          [theme.breakpoints.up("md")]: {
+            display: "block",
+            width: 60,
+            height: 60,
+            borderRadius: "18px", //TODO
+          },
+          [theme.breakpoints.up("lg")]: {
+            display: "block",
+            width: 80,
+            height: 80,
+            borderRadius: "18px", //TODO
           },
         }}
       >
         {icon}
       </Icon>
-      <Typography mt={2} variant="h5" color={colors.goldAccent[300]}>
+      <Typography
+        sx={{
+          [theme.breakpoints.up("sm")]: {
+            variant: "h6",
+          },
+          [theme.breakpoints.up("md")]: {
+            variant: "h5",
+          },
+          [theme.breakpoints.up("lg")]: {
+            variant: "h4",
+          },
+        }}
+        mt={2}
+        color={colors.goldAccent[300]}
+      >
         Управление
       </Typography>
       <Typography
