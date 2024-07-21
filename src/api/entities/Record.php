@@ -2,34 +2,35 @@
 
 class Record
 {
-	public $id;
-	public $domainId;
-	public $name;
-	public $content;
-	public $priority;
-	public $ttl;
-	public $type;
-	public $createdAt;
-	public $updatedAt;
+	public int $id;
+	public int $domainId;
+	public string $name;
+	public ?string $content;
+	public ?int $priority;
+	public ?int $ttl;
+	public string $type;
+	public string $createdAt;
+	public string $updatedAt;
 
-	public function __construct($id, $name)
-	{
-		$this->id = $id;
+	public function __construct(
+		?int $id,  // Сделайте этот параметр nullable
+		int $domainId,
+		string $name,
+		?string $content,
+		?int $priority,
+		?int $ttl,
+		string $type,
+		string $createdAt,
+		string $updatedAt
+	) {
+		$this->id = $id ?? 0;  // Установите значение по умолчанию, если null
+		$this->domainId = $domainId;
 		$this->name = $name;
+		$this->content = $content;
+		$this->priority = $priority;
+		$this->ttl = $ttl;
+		$this->type = $type;
+		$this->createdAt = $createdAt;
+		$this->updatedAt = $updatedAt;
 	}
 }
-
-/*
-CREATE TABLE `zone_item` (
-  `id` int(11) NOT NULL,
-  `zone_id` int(11) NOT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `type` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
-  `content` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `priority` int(11) DEFAULT NULL,
-  `ttl` int(11) DEFAULT NULL,
-  `created_at` int(11) NOT NULL,
-  `updated_at` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-*/
