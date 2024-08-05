@@ -2,7 +2,6 @@
 
 require_once 'entities/Domain.php';
 require_once 'entities/User.php';
-require_once 'entities/UserRole.php';
 
 interface DomainRepositoryInterface
 {

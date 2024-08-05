@@ -1,6 +1,6 @@
 <?php
 
-class Domain
+class Domain implements JsonSerializable
 {
   private int $id;
   private string $name;
@@ -33,6 +33,18 @@ class Domain
     $this->created = $created;
     $this->updated = $updated;
     $this->expires = $expires;
+  }
+
+  public function jsonSerialize(): array
+  {
+    return [
+      'id' => $this->id,
+      'name' => $this->name,
+      'soa' => $this->soa,
+      'created' => $this->created,
+      'updated' => $this->updated,
+      'expires' => $this->expires,
+    ];
   }
 
   /**
