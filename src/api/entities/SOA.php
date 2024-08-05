@@ -10,8 +10,26 @@ class SOA
   private $expire;
   private $ttl;
 
-  public function __construct($primary_ns, $admin_email, $serial, $refresh, $retry, $expire, $ttl)
-  {
+  /**
+   * Конструктор класса SOA.
+   *
+   * @param string $primary_ns Основной сервер имен (NS).
+   * @param string $admin_email Адрес электронной почты администратора.
+   * @param int $serial Серийный номер зоны.
+   * @param int $refresh Интервал обновления (в секундах).
+   * @param int $retry Интервал повторных попыток (в секундах).
+   * @param int $expire Время истечения (в секундах).
+   * @param int $ttl Время жизни (TTL) (в секундах).
+   */
+  public function __construct(
+    string $primary_ns,
+    string $admin_email,
+    int $serial,
+    int $refresh,
+    int $retry,
+    int $expire,
+    int $ttl
+  ) {
     $this->primary_ns = $primary_ns;
     $this->admin_email = $admin_email;
     $this->serial = $serial;
@@ -21,32 +39,72 @@ class SOA
     $this->ttl = $ttl;
   }
 
-  // Геттеры
-  public function getPrimaryNS()
+  /**
+   * Получить основной сервер имен (NS).
+   *
+   * @return string Основной сервер имен.
+   */
+  public function getPrimaryNS(): string
   {
     return $this->primary_ns;
   }
-  public function getAdminEmail()
+
+  /**
+   * Получить адрес электронной почты администратора.
+   *
+   * @return string Адрес электронной почты.
+   */
+  public function getAdminEmail(): string
   {
     return $this->admin_email;
   }
-  public function getSerial()
+
+  /**
+   * Получить серийный номер зоны.
+   *
+   * @return int Серийный номер зоны.
+   */
+  public function getSerial(): int
   {
     return $this->serial;
   }
-  public function getRefresh()
+
+  /**
+   * Получить интервал обновления (в секундах).
+   *
+   * @return int Интервал обновления.
+   */
+  public function getRefresh(): int
   {
     return $this->refresh;
   }
-  public function getRetry()
+
+  /**
+   * Получить интервал повторных попыток (в секундах).
+   *
+   * @return int Интервал повторных попыток.
+   */
+  public function getRetry(): int
   {
     return $this->retry;
   }
-  public function getExpire()
+
+  /**
+   * Получить время истечения (в секундах).
+   *
+   * @return int Время истечения.
+   */
+  public function getExpire(): int
   {
     return $this->expire;
   }
-  public function getTTL()
+
+  /**
+   * Получить время жизни (TTL) (в секундах).
+   *
+   * @return int Время жизни (TTL).
+   */
+  public function getTTL(): int
   {
     return $this->ttl;
   }

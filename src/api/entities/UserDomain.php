@@ -6,6 +6,13 @@ class UserDomain
 	private int $userId;
 	private int $domainId;
 
+	/**
+	 * Конструктор класса UserDomain.
+	 *
+	 * @param int $id ID записи связи.
+	 * @param int $userId ID пользователя.
+	 * @param int $domainId ID домена.
+	 */
 	public function __construct(int $id, int $userId, int $domainId)
 	{
 		$this->id = $id;
@@ -13,34 +20,61 @@ class UserDomain
 		$this->domainId = $domainId;
 	}
 
-	// Getter and Setter for ID
+	/**
+	 * Получить ID записи связи.
+	 *
+	 * @return int ID записи связи.
+	 */
 	public function getId(): int
 	{
 		return $this->id;
 	}
 
+	/**
+	 * Установить ID записи связи.
+	 *
+	 * @param int $id ID записи связи.
+	 */
 	public function setId(int $id): void
 	{
 		$this->id = $id;
 	}
 
-	// Getter and Setter for User ID
+	/**
+	 * Получить ID пользователя.
+	 *
+	 * @return int ID пользователя.
+	 */
 	public function getUserId(): int
 	{
 		return $this->userId;
 	}
 
+	/**
+	 * Установить ID пользователя.
+	 *
+	 * @param int $userId ID пользователя.
+	 */
 	public function setUserId(int $userId): void
 	{
 		$this->userId = $userId;
 	}
 
-	// Getter and Setter for Domain ID
+	/**
+	 * Получить ID домена.
+	 *
+	 * @return int ID домена.
+	 */
 	public function getDomainId(): int
 	{
 		return $this->domainId;
 	}
 
+	/**
+	 * Установить ID домена.
+	 *
+	 * @param int $domainId ID домена.
+	 */
 	public function setDomainId(int $domainId): void
 	{
 		$this->domainId = $domainId;
