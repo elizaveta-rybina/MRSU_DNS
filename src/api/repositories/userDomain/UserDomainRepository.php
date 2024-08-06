@@ -25,7 +25,7 @@ class UserDomainRepository implements UserDomainRepositoryInterface
 	 */
 	public function addUserToDomain(int $userId, int $domainId): void
 	{
-		$stmt = $this->connection->prepare("INSERT INTO userDomains (user_id, domain_id) VALUES (:user_id, :domain_id)");
+		$stmt = $this->connection->prepare("INSERT INTO userDomain (user_id, domain_id) VALUES (:user_id, :domain_id)");
 		$stmt->bindValue(":user_id", $userId, PDO::PARAM_INT);
 		$stmt->bindValue(":domain_id", $domainId, PDO::PARAM_INT);
 		$stmt->execute();
@@ -39,7 +39,7 @@ class UserDomainRepository implements UserDomainRepositoryInterface
 	 */
 	public function removeUserFromDomain(int $userId, int $domainId): void
 	{
-		$stmt = $this->connection->prepare("DELETE FROM userDomains WHERE user_id = :user_id AND domain_id = :domain_id");
+		$stmt = $this->connection->prepare("DELETE FROM userDomain WHERE user_id = :user_id AND domain_id = :domain_id");
 		$stmt->bindValue(":user_id", $userId, PDO::PARAM_INT);
 		$stmt->bindValue(":domain_id", $domainId, PDO::PARAM_INT);
 		$stmt->execute();
@@ -52,10 +52,38 @@ class UserDomainRepository implements UserDomainRepositoryInterface
 	 */
 	public function removeAllUsersFromDomain(int $domainId): void
 	{
-		$stmt = $this->connection->prepare("DELETE FROM userDomains WHERE domain_id = :domain_id");
+		$stmt = $this->connection->prepare("DELETE FROM userDomain WHERE domain_id = :domain_id");
 		$stmt->bindValue(":domain_id", $domainId, PDO::PARAM_INT);
 		$stmt->execute();
 	}
+
+	public function getAllUsers(): array
+	{
+		try {
+			$stmt = $this->connection->prepare("SELECT * FROM users");
+			$stmt->execute();
+
+			$usersData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			$users = [];
+
+			foreach ($usersData as $userData) {
+				$users[] = new User(
+					(int)$userData['id'],
+					$userData['first_name'],
+					$userData['last_name'],
+					$userData['email'],
+					UserRole::from($userData['role']),
+					$userData['created_at'],
+					$userData['last_login'],
+					(bool)$userData['status']
+				);
+			}
+			return $users;
+		} catch (PDOException $e) {
+			throw new RuntimeException('Error retrieving all users: ' . $e->getMessage());
+		}
+	}
+
 
 	/**
 	 * Получает всех пользователей для данного домена.
@@ -65,34 +93,50 @@ class UserDomainRepository implements UserDomainRepositoryInterface
 	 */
 	public function getUsersForDomain(int $domainId): array
 	{
-		$stmt = $this->connection->prepare("
+		try {
+			$stmt = $this->connection->prepare("
             SELECT u.*
-            FROM Users u
-            JOIN userDomains ud ON u.id = ud.user_id
+            FROM users u
+            JOIN userDomain ud ON u.id = ud.user_id
             WHERE ud.domain_id = :domain_id
         ");
-		$stmt->bindValue(":domain_id", $domainId, PDO::PARAM_INT);
-		$stmt->execute();
+			$stmt->bindValue(":domain_id", $domainId, PDO::PARAM_INT);
+			$stmt->execute();
 
-		$usersData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		$users = [];
+			$usersData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-		foreach ($usersData as $userData) {
-			$users[] = new User(
-				$userData['id'],
-				$userData['first_name'],
-				$userData['last_name'],
-				$userData['email'],
-				UserRole::from($userData['role']),
-				$userData['created_at'],
-				$userData['last_login'],
-				(bool) $userData['status'],
-				$userData['password_hash']
-			);
+			// Проверка на пустой результат
+			if ($usersData === false) {
+				return []; // Или можно бросить исключение, если это критично
+			}
+
+			$users = [];
+			foreach ($usersData as $userData) {
+				try {
+					$role = UserRole::from($userData['role']); // Попробуйте создать роль из строки
+
+					$users[] = new User(
+						(int)$userData['id'],
+						$userData['first_name'],
+						$userData['last_name'],
+						$userData['email'],
+						$role,
+						$userData['created_at'],
+						$userData['last_login'],
+						(bool)$userData['status']
+					);
+				} catch (ValueError $e) {
+					// Обработка исключения, если значение роли неверное
+					error_log('Invalid user role: ' . $userData['role']);
+				}
+			}
+			return $users;
+		} catch (PDOException $e) {
+			// Логирование ошибки или бросание исключения
+			throw new RuntimeException('Error retrieving users for domain: ' . $e->getMessage());
 		}
-
-		return $users;
 	}
+
 
 	/**
 	 * Получает все домены, к которым привязан пользователь.
@@ -104,8 +148,8 @@ class UserDomainRepository implements UserDomainRepositoryInterface
 	{
 		$stmt = $this->connection->prepare("
             SELECT d.*
-            FROM Domains d
-            JOIN userDomains ud ON d.id = ud.domain_id
+            FROM domains d
+            JOIN userDomain ud ON d.id = ud.domain_id
             WHERE ud.user_id = :user_id
         ");
 		$stmt->bindValue(":user_id", $userId, PDO::PARAM_INT);
