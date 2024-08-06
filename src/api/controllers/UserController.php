@@ -66,22 +66,51 @@ class UserController
 	 * @param int $userId Идентификатор пользователя.
 	 * @return string Сгенерированный токен аутентификации.
 	 */
+
 	private function generateToken(int $userId): string
 	{
 		// Удаляем истекшие токены перед созданием нового
 		$this->authRepository->deleteExpiredTokens();
 
+		// Определяем секретный ключ
+		$secretKey = 'mrsu-dns';
+
 		// Создаем объект DateTime с Московским временем
 		$now = new DateTime('now', new DateTimeZone('Europe/Moscow'));
-		// Добавляем 1 час к текущему времени
-		$expiry = $now->modify('+1 hour')->format('Y-m-d H:i:s');
+		$issuedAt = $now->getTimestamp(); // Время создания токена
+		$expiration = $now->modify('+1 hour')->getTimestamp(); // Время истечения срока действия токена
 
-		// Генерируем новый токен
-		$token = bin2hex(random_bytes(16));
+		// Заголовок токена
+		$header = [
+			'alg' => 'HS256', // Алгоритм подписи
+			'typ' => 'JWT'
+		];
+
+		// Полезная нагрузка токена
+		$payload = [
+			'iss' => 'mrsu-issuer', // Issuer (может быть URL вашего сервера)
+			'iat' => $issuedAt, // Время создания
+			'exp' => $expiration, // Время истечения срока
+			'userId' => $userId, // Пользовательский ID
+		];
+
+		// Кодируем заголовок и полезную нагрузку в Base64Url
+		$base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode(json_encode($header)));
+		$base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode(json_encode($payload)));
+
+		// Создаем строку для подписи
+		$signatureInput = "$base64UrlHeader.$base64UrlPayload";
+
+		// Создаем подпись с использованием HMAC SHA-256
+		$signature = hash_hmac('sha256', $signatureInput, $secretKey, true);
+		$base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
+
+		// Создаем JWT
+		$jwt = "$base64UrlHeader.$base64UrlPayload.$base64UrlSignature";
 
 		// Сохраняем токен в базе данных
-		$this->authRepository->saveToken($token, $expiry, $userId);
+		$this->authRepository->saveToken($jwt, date('Y-m-d H:i:s', $expiration), $userId);
 
-		return $token;
+		return $jwt;
 	}
 }
