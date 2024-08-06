@@ -77,6 +77,6 @@ Request Body:
 }
 
 1. Выполнить аутентификацию пользователя по email и паролю:
-	POST /auth/login
+	POST /login
 
 
