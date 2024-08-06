@@ -38,5 +38,5 @@ interface UserRepositoryInterface
 	 *
 	 * @param User $user Объект User с данными нового пользователя.
 	 */
-	public function add(User $user): void;
+	public function add(User $user): int;
 }

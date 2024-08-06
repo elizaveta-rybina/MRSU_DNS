@@ -1,16 +1,21 @@
 <?php
-
 require_once 'data/DbContext.php';
 require_once 'UserRepositoryInterface.php';
 require_once 'entities/User.php';
-require_once 'entities/UserRole.php';
 
+/**
+ * Класс UserRepository предоставляет методы для работы с пользователями в базе данных.
+ */
 class UserRepository implements UserRepositoryInterface
 {
-	private $connection;
+	/**
+	 * @var PDO Соединение с базой данных.
+	 */
+	private PDO $connection;
 
 	/**
 	 * Конструктор класса.
+	 *
 	 * Инициализирует соединение с базой данных.
 	 */
 	public function __construct()
@@ -37,10 +42,10 @@ class UserRepository implements UserRepositoryInterface
 	}
 
 	/**
-	 * Получает пользователя по его ID.
+	 * Получает пользователя по его идентификатору.
 	 *
-	 * @param int $id ID пользователя.
-	 * @return User|null Объект User, если пользователь найден, иначе null.
+	 * @param int $id Идентификатор пользователя.
+	 * @return User|null Объект User или null, если пользователь не найден.
 	 */
 	public function get(int $id): ?User
 	{
@@ -58,9 +63,9 @@ class UserRepository implements UserRepositoryInterface
 	}
 
 	/**
-	 * Удаляет пользователя по его ID.
+	 * Удаляет пользователя по его идентификатору.
 	 *
-	 * @param int $id ID пользователя.
+	 * @param int $id Идентификатор пользователя.
 	 */
 	public function delete(int $id): void
 	{
@@ -76,15 +81,14 @@ class UserRepository implements UserRepositoryInterface
 	 */
 	public function update(User $user): void
 	{
-		$stmt = $this->connection->prepare("UPDATE users SET first_name = :first_name, last_name = :last_name, email = :email, role = :role, created_at = :created_at, last_login = :last_login, status = :status, password_hash = :password_hash WHERE id = :id");
+		$stmt = $this->connection->prepare("UPDATE users SET first_name = :first_name, last_name = :last_name, email = :email, role = :role, created_at = :created_at, last_login = :last_login, status = :status WHERE id = :id");
 		$stmt->bindValue(":first_name", $user->getFirstName(), PDO::PARAM_STR);
 		$stmt->bindValue(":last_name", $user->getLastName(), PDO::PARAM_STR);
 		$stmt->bindValue(":email", $user->getEmail(), PDO::PARAM_STR);
-		$stmt->bindValue(":role", $user->getRole()->value, PDO::PARAM_STR); // Используем значение роли
+		$stmt->bindValue(":role", $user->getRole()->value, PDO::PARAM_STR);
 		$stmt->bindValue(":created_at", $user->getCreatedAt(), PDO::PARAM_STR);
 		$stmt->bindValue(":last_login", $user->getLastLogin(), PDO::PARAM_STR);
 		$stmt->bindValue(":status", $user->isStatus(), PDO::PARAM_BOOL);
-		$stmt->bindValue(":password_hash", $user->getPasswordHash(), PDO::PARAM_STR);
 		$stmt->bindValue(":id", $user->getId(), PDO::PARAM_INT);
 		$stmt->execute();
 	}
@@ -92,27 +96,28 @@ class UserRepository implements UserRepositoryInterface
 	/**
 	 * Добавляет нового пользователя в базу данных.
 	 *
-	 * @param User $user Объект User с данными для добавления.
+	 * @param User $user Объект User с данными нового пользователя.
 	 */
-	public function add(User $user): void
+	public function add(User $user): int
 	{
-		$stmt = $this->connection->prepare("INSERT INTO users (first_name, last_name, email, role, created_at, last_login, status, password_hash) VALUES (:first_name, :last_name, :email, :role, :created_at, :last_login, :status, :password_hash)");
+		$stmt = $this->connection->prepare("INSERT INTO users (first_name, last_name, email, role, created_at, last_login, status) VALUES (:first_name, :last_name, :email, :role, :created_at, :last_login, :status)");
 		$stmt->bindValue(":first_name", $user->getFirstName(), PDO::PARAM_STR);
 		$stmt->bindValue(":last_name", $user->getLastName(), PDO::PARAM_STR);
 		$stmt->bindValue(":email", $user->getEmail(), PDO::PARAM_STR);
-		$stmt->bindValue(":role", $user->getRole()->value, PDO::PARAM_STR); // Используем значение роли
+		$stmt->bindValue(":role", $user->getRole()->value, PDO::PARAM_STR);
 		$stmt->bindValue(":created_at", $user->getCreatedAt(), PDO::PARAM_STR);
 		$stmt->bindValue(":last_login", $user->getLastLogin(), PDO::PARAM_STR);
 		$stmt->bindValue(":status", $user->isStatus(), PDO::PARAM_BOOL);
-		$stmt->bindValue(":password_hash", $user->getPasswordHash(), PDO::PARAM_STR);
 		$stmt->execute();
+
+		return (int) $this->connection->lastInsertId();
 	}
 
 	/**
-	 * Ищет пользователей по адресу электронной почты.
+	 * Ищет пользователей по их электронной почте.
 	 *
-	 * @param string $email Адрес электронной почты пользователя.
-	 * @return User[] Массив объектов User, соответствующих заданному email.
+	 * @param string $email Электронная почта пользователя.
+	 * @return User[] Массив объектов User.
 	 */
 	public function findByEmail(string $email): array
 	{
@@ -129,10 +134,10 @@ class UserRepository implements UserRepositoryInterface
 	}
 
 	/**
-	 * Ищет пользователей по статусу.
+	 * Ищет пользователей по их статусу.
 	 *
-	 * @param bool $status Статус пользователя (активен/неактивен).
-	 * @return User[] Массив объектов User, соответствующих заданному статусу.
+	 * @param bool $status Статус пользователя.
+	 * @return User[] Массив объектов User.
 	 */
 	public function findByStatus(bool $status): array
 	{
@@ -149,9 +154,9 @@ class UserRepository implements UserRepositoryInterface
 	}
 
 	/**
-	 * Активирует пользователя по его ID.
+	 * Активирует пользователя.
 	 *
-	 * @param int $id ID пользователя.
+	 * @param int $id Идентификатор пользователя.
 	 */
 	public function activate(int $id): void
 	{
@@ -161,9 +166,9 @@ class UserRepository implements UserRepositoryInterface
 	}
 
 	/**
-	 * Деактивирует пользователя по его ID.
+	 * Деактивирует пользователя.
 	 *
-	 * @param int $id ID пользователя.
+	 * @param int $id Идентификатор пользователя.
 	 */
 	public function deactivate(int $id): void
 	{
@@ -173,10 +178,10 @@ class UserRepository implements UserRepositoryInterface
 	}
 
 	/**
-	 * Преобразует строку из результата запроса базы данных в объект User.
+	 * Преобразует строку из базы данных в объект User.
 	 *
-	 * @param array $row Массив, содержащий данные пользователя из базы данных.
-	 * @return User Объект User, созданный на основе данных.
+	 * @param array $row Данные пользователя из базы данных.
+	 * @return User Объект User.
 	 */
 	private function mapRowToUser(array $row): User
 	{
@@ -188,8 +193,7 @@ class UserRepository implements UserRepositoryInterface
 			UserRole::from($row['role']),
 			$row['created_at'],
 			$row['last_login'],
-			(bool)$row['status'],
-			$row['password_hash']
+			(bool)$row['status']
 		);
 	}
 }
