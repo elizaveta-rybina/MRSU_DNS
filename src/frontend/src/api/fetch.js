@@ -16,13 +16,11 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Функция аутентификации пользователя
 const authenticateUser = async (credentials) => {
   const response = await api.post('/login', credentials);
   return response.data;
 };
 
-// Хук для использования в компоненте
 export const useAuthenticateUser = () => {
   return useMutation(authenticateUser);
 };
