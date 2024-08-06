@@ -34,7 +34,7 @@ function App() {
 
   useEffect(() => {
     checkTokenExpiration();
-    const interval = setInterval(checkTokenExpiration, 60000); // Проверка каждые 60 секунд
+    const interval = setInterval(checkTokenExpiration, 60000);
 
     return () => clearInterval(interval);
   }, []);

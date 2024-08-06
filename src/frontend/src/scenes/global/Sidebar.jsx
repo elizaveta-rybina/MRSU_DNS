@@ -1,13 +1,10 @@
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
-import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import DnsOutlinedIcon from "@mui/icons-material/DnsOutlined";
-import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, MenuItem, ProSidebar } from "react-pro-sidebar";
 import "react-pro-sidebar/dist/css/styles.css";
 import { Link } from "react-router-dom";
@@ -37,6 +34,14 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   return (
     <Box
@@ -104,7 +109,7 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "20px 0 0 0" }}
                 >
-                  Лысенков Алексей Евгеньевич
+                  {user ? `${user.firstName} ${user.lastName}` : "Загрузка..."}
                 </Typography>
               </Box>
             </Box>

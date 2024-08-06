@@ -57,16 +57,17 @@ export default function SignInSide({ setToken }) {
       password: data.get("password"),
     };
     authenticateUser(credentials, {
-      onSuccess: (data) => {
-        console.log('User authenticated:', data);
-        localStorage.setItem('token', data.token);
-        setToken(data.token);
+      onSuccess: (response) => {
+        const { token, user } = response;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user)); // Сохранение данных пользователя
+        setToken(token);
       },
       onError: (error) => {
         console.error('Authentication failed:', error);
       },
     });
-  };
+  };  
 
   return (
     <Grid
