@@ -42,7 +42,6 @@ class UserController
 		foreach ($users as $user) {
 			$loginRepository = new LoginRepository();
 			$login = $loginRepository->getByUserId($user->getId());
-
 			if ($login && $login->checkPassword($password)) {
 				// Создаем новый токен
 				$token = $this->generateToken($user->getId());
@@ -59,7 +58,7 @@ class UserController
 			'message' => 'Invalid email or password'
 		];
 	}
-
+	//0af30d8858c0abb06d9673de745d7b61
 	/**
 	 * Генерирует новый токен аутентификации для пользователя.
 	 *
@@ -73,9 +72,15 @@ class UserController
 		// Удаляем истекшие токены перед созданием нового
 		$this->authRepository->deleteExpiredTokens();
 
-		$token = bin2hex(random_bytes(16));
-		$expiry = (new DateTime())->modify('+1 hour')->format('Y-m-d H:i:s');
+		// Создаем объект DateTime с Московским временем
+		$now = new DateTime('now', new DateTimeZone('Europe/Moscow'));
+		// Добавляем 1 час к текущему времени
+		$expiry = $now->modify('+1 hour')->format('Y-m-d H:i:s');
 
+		// Генерируем новый токен
+		$token = bin2hex(random_bytes(16));
+
+		// Сохраняем токен в базе данных
 		$this->authRepository->saveToken($token, $expiry, $userId);
 
 		return $token;
