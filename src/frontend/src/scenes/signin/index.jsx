@@ -13,6 +13,7 @@ import { styled } from "@mui/system";
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { tokens } from "../../theme";
+import { useAuthenticateUser } from '../../api/fetch';
 
 const CustomTextField = styled(TextField)(({ theme, colors }) => ({
   "& label.Mui-focused": {
@@ -43,18 +44,29 @@ const CustomTextField = styled(TextField)(({ theme, colors }) => ({
   },
 }));
 
-export default function SignInSide() {
+export default function SignInSide({ setToken }) {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  const { mutate: authenticateUser, isLoading, isError } = useAuthenticateUser();
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
+    const credentials = {
       email: data.get("email"),
       password: data.get("password"),
+    };
+    authenticateUser(credentials, {
+      onSuccess: (data) => {
+        console.log('User authenticated:', data);
+        localStorage.setItem('token', data.token);
+        setToken(data.token);
+      },
+      onError: (error) => {
+        console.error('Authentication failed:', error);
+      },
     });
   };
-
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
 
   return (
     <Grid
@@ -178,9 +190,11 @@ export default function SignInSide() {
               fullWidth
               variant="contained"
               sx={{ mt: 2, mb: 2, p: 1.5 }}
+              disabled={isLoading}
             >
               Войти
             </Button>
+            {isError && <Typography color="error">Ошибка аутентификации</Typography>}
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={6} sx={{ textAlign: "left" }}>
                 <Typography variant="body2" component="span">
