@@ -13,6 +13,7 @@ import HeaderButtons from "../../components/Header/HeaderButtons";
 import { deleteDomainsSuccess } from "../../redux/slices/DomainSlice";
 import { tokens } from "../../theme";
 import useHelpers from "../../utils/helpers";
+import { fetchDomainsThunk } from '../../api/domains';
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel, rows, arrIds } = props;
@@ -60,8 +61,7 @@ const Domain = () => {
   const { domains } = useSelector(domainSelector);
   const [arrIds, setArrIds] = useState([]);
   const [rows, setRows] = React.useState([]);
-
-  //TODO: спросить можно ли так много передавать параметров и можно ли сделать лучше (может через пропсы)
+  const dispatch = useDispatch();
 
   const {
     infoClick,
@@ -72,6 +72,10 @@ const Domain = () => {
     processRowUpdate,
     rowModesModelChange,
   } = useHelpers(rowModesModel, setRowModesModel, rows, setRows);
+
+  React.useEffect(() => {
+    dispatch(fetchDomainsThunk());
+  }, [dispatch]);
 
   React.useEffect(() => {
     setRows(domains);

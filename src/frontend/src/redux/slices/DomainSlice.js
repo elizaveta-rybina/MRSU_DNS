@@ -1,14 +1,14 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { mockDataDomain } from '../../data/mockData';
+import { createSlice } from '@reduxjs/toolkit';
+import { fetchDomainsThunk } from '../../api/domains';
 
 const initialState = {
-  domains: mockDataDomain,
+  domains: [],
   isFetch: false,
   isErr: false,
 };
 
-export const DomainSlice = createSlice({
-  name: "domains",
+const domainSlice = createSlice({
+  name: 'domains',
   initialState,
   reducers: {
     deleteDomainsSuccess(state, action) {
@@ -20,7 +20,22 @@ export const DomainSlice = createSlice({
       );
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchDomainsThunk.pending, (state) => {
+        state.isFetch = true;
+        state.isErr = false;
+      })
+      .addCase(fetchDomainsThunk.fulfilled, (state, action) => {
+        state.isFetch = false;
+        state.domains = action.payload; // Обновление доменов
+      })
+      .addCase(fetchDomainsThunk.rejected, (state) => {
+        state.isFetch = false;
+        state.isErr = true;
+      });
+  },
 });
 
-export const { deleteDomainsSuccess } = DomainSlice.actions;
-export default DomainSlice.reducer;
+export const { deleteDomainsSuccess } = domainSlice.actions;
+export default domainSlice.reducer;
