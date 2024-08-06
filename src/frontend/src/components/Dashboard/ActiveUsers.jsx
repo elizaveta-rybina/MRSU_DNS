@@ -40,7 +40,7 @@ const ActiveUsers = ({ title }) => {
     },
     {
       field: "status",
-      headerName: "В сети",
+      headerName: "Активен",
       type: "boolean",
       flex: 1,
     },

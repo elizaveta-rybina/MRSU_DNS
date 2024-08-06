@@ -33,7 +33,6 @@ const CustomBox = ({ mr, icon, title, link }) => {
           display: "none",
           margin: "0 auto",
           bgcolor: "background.default",
-
           //TODO
           display: "flex",
           alignItems: "center",
@@ -51,6 +50,7 @@ const CustomBox = ({ mr, icon, title, link }) => {
             borderRadius: "18px", //TODO
           },
           [theme.breakpoints.up("lg")]: {
+            alignItems: "center",
             display: "block",
             width: 80,
             height: 80,
