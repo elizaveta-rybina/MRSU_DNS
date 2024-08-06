@@ -31,9 +31,9 @@ class RecordRepository implements RecordRepositoryInterface
    * @param string|null $type Тип записи. Если не указан, будут возвращены записи всех типов.
    * @return Record[] Массив объектов Record.
    */
-  public function getAll(?string $type = null): array
+  public function getAll(?string $type): array
   {
-    $query = "SELECT * FROM `records` WHERE `domainId` = :domainId";
+    $query = "SELECT * FROM `records` WHERE `domain_id` = :domainId";
     if ($type) {
       $query .= " AND `type` = :type";
     }
@@ -52,36 +52,7 @@ class RecordRepository implements RecordRepositoryInterface
     return $records;
   }
 
-  /**
-   * Получить все записи для указанного домена и типа (если указан).
-   *
-   * @param int $domainId Идентификатор домена.
-   * @param string|null $type Тип записи. Если не указан, будут возвращены записи всех типов.
-   * @return Record[] Массив объектов Record.
-   */
-  public function getAllByType(int $domainId, ?string $type = null): array
-  {
-    $query = "SELECT * FROM records WHERE domainId = :domainId";
 
-    if ($type !== null) {
-      $query .= " AND type = :type";
-    }
-
-    $stmt = $this->connection->prepare($query);
-    $stmt->bindValue(":domainId", $domainId, PDO::PARAM_INT);
-
-    if ($type !== null) {
-      $stmt->bindValue(":type", $type, PDO::PARAM_STR);
-    }
-
-    $stmt->execute();
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $records = [];
-    foreach ($data as $row) {
-      $records[] = $this->mapRowToRecord($row);
-    }
-    return $records;
-  }
 
   /**
    * Получить запись по идентификатору.
@@ -91,7 +62,7 @@ class RecordRepository implements RecordRepositoryInterface
    */
   public function get(int $id): ?Record
   {
-    $stmt = $this->connection->prepare("SELECT * FROM records WHERE id = :id AND domainId = :domainId");
+    $stmt = $this->connection->prepare("SELECT * FROM `records` WHERE `id` = :id AND `domain_id` = :domainId");
     $stmt->bindValue(":id", $id, PDO::PARAM_INT);
     $stmt->bindValue(":domainId", $this->domainId, PDO::PARAM_INT);
     $stmt->execute();
@@ -105,6 +76,7 @@ class RecordRepository implements RecordRepositoryInterface
     return null;
   }
 
+
   /**
    * Удалить запись по идентификатору.
    *
@@ -112,7 +84,7 @@ class RecordRepository implements RecordRepositoryInterface
    */
   public function delete(int $id): void
   {
-    $stmt = $this->connection->prepare("DELETE FROM `records` WHERE `id` = :id AND `domainId` = :domainId");
+    $stmt = $this->connection->prepare("DELETE FROM `records` WHERE `id` = :id AND `domain_id` = :domainId");
     $stmt->bindValue(":id", $id, PDO::PARAM_INT);
     $stmt->bindValue(":domainId", $this->domainId, PDO::PARAM_INT);
     $stmt->execute();
@@ -126,7 +98,7 @@ class RecordRepository implements RecordRepositoryInterface
    */
   public function update(Record $current, Record $new): void
   {
-    $stmt = $this->connection->prepare("UPDATE `records` SET `name` = :name, `content` = :content, `priority` = :priority, `ttl` = :ttl, `type` = :type, `updatedAt` = :updatedAt WHERE `id` = :id AND `domainId` = :domainId");
+    $stmt = $this->connection->prepare("UPDATE `records` SET `name` = :name, `content` = :content, `priority` = :priority, `ttl` = :ttl, `type` = :type, `updated_at` = :updatedAt WHERE `id` = :id AND `domain_id` = :domainId");
     $stmt->bindValue(":name", $new->getName(), PDO::PARAM_STR);
     $stmt->bindValue(":content", $new->getContent(), PDO::PARAM_STR);
     $stmt->bindValue(":priority", $new->getPriority(), PDO::PARAM_INT);
@@ -145,7 +117,7 @@ class RecordRepository implements RecordRepositoryInterface
    */
   public function add(Record $record): void
   {
-    $stmt = $this->connection->prepare("INSERT INTO `records` (`domainId`, `name`, `content`, `priority`, `ttl`, `type`, `createdAt`, `updatedAt`) VALUES (:domainId, :name, :content, :priority, :ttl, :type, :createdAt, :updatedAt)");
+    $stmt = $this->connection->prepare("INSERT INTO `records` (`domain_id`, `name`, `content`, `priority`, `ttl`, `type`, `created_at`, `updated_at`) VALUES (:domainId, :name, :content, :priority, :ttl, :type, :createdAt, :updatedAt)");
     $stmt->bindValue(":domainId", $this->domainId, PDO::PARAM_INT);
     $stmt->bindValue(":name", $record->getName(), PDO::PARAM_STR);
     $stmt->bindValue(":content", $record->getContent(), PDO::PARAM_STR);
@@ -167,14 +139,14 @@ class RecordRepository implements RecordRepositoryInterface
   {
     return new Record(
       isset($row['id']) ? (int)$row['id'] : null,
-      (int)$row['domainId'],
+      (int)$row['domain_id'],
       $row['name'],
       $row['content'],
       $row['priority'] !== null ? (int)$row['priority'] : null,
       $row['ttl'] !== null ? (int)$row['ttl'] : null,
       $row['type'],
-      $row['createdAt'],
-      $row['updatedAt']
+      $row['created_at'],
+      $row['updated_at']
     );
   }
 }

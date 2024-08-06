@@ -13,16 +13,7 @@ interface RecordRepositoryInterface
 	 * @param string $orderby Поле и порядок сортировки записей. По умолчанию - "id DESC".
 	 * @return Record[] Массив объектов Record.
 	 */
-	public function getAll(string $orderby = "id DESC"): array;
-
-	/**
-	 * Получить все записи для указанного домена и типа (если указан).
-	 *
-	 * @param int $domainId Идентификатор домена.
-	 * @param string|null $type Тип записи. Если не указан, будут возвращены записи всех типов.
-	 * @return Record[] Массив объектов Record.
-	 */
-	public function getAllByType(int $domainId, ?string $type = null): array;
+	public function getAll(?string $type): array;
 
 	/**
 	 * Получить запись по идентификатору.
