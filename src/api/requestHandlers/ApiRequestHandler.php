@@ -27,7 +27,6 @@ class ApiRequestHandler
     $method = $_SERVER['REQUEST_METHOD'];
     $path = $_SERVER['REQUEST_URI'];
 
-    // Извлечение сегментов пути
     $urlParts = parse_url($path);
     $pathParts = explode('/', trim($urlParts['path'], '/'));
 
@@ -36,12 +35,10 @@ class ApiRequestHandler
     $subResource = isset($pathParts[2]) ? $pathParts[2] : null;
     $subResourceId = $pathParts[3] ?? null;
 
-    // Извлечение параметров запроса
     $query = $urlParts['query'] ?? '';
     parse_str($query, $queryParams);
     $type = $queryParams['type'] ?? null;
 
-    // Обработка запроса на логин
     if ($resource === 'login' && $method === 'POST') {
       $data = json_decode(file_get_contents('php://input'), true);
       if (isset($data['email']) && isset($data['password'])) {

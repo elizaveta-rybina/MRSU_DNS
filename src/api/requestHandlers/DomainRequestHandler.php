@@ -107,7 +107,7 @@ class DomainRequestHandler
 
 		try {
 			$newDomain = new Domain(
-				0, // ID будет присвоен базой данных автоматически
+				0,
 				$data['name'],
 				new SOA(
 					$data['soa']['primary_ns'],
@@ -123,7 +123,6 @@ class DomainRequestHandler
 				$data['expires']
 			);
 		} catch (Exception $e) {
-			// Логирование или обработка исключений
 			echo "Error: " . $e->getMessage();
 		}
 
@@ -159,7 +158,7 @@ class DomainRequestHandler
 			return;
 		}
 
-		$errors = $this->getValidationErrors($data, false); // Передаем false, так как это обновление
+		$errors = $this->getValidationErrors($data, false);
 		if (!empty($errors)) {
 			http_response_code(403);
 			echo json_encode(['errors' => $errors]);
@@ -170,7 +169,7 @@ class DomainRequestHandler
 		if ($current) {
 			$newDomain = new Domain(
 				$current->getId(),
-				$data['name'] ?? $current->getName(), // Устанавливаем новое имя, если оно предоставлено
+				$data['name'] ?? $current->getName(),
 				new SOA(
 					$data['soa']['primary_ns'] ?? $current->getSOA()->getPrimaryNS(),
 					$data['soa']['admin_email'] ?? $current->getSOA()->getAdminEmail(),

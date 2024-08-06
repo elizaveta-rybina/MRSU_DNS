@@ -65,12 +65,9 @@ class AuthRepository implements AuthRepositoryInterface
 	 */
 	public function deleteExpiredTokens(): void
 	{
-		// Создаем объект DateTime с Московским временем
 		$now = new DateTime('now', new DateTimeZone('Europe/Moscow'));
-		// Форматируем текущую дату и время
 		$currentDateTime = $now->format('Y-m-d H:i:s');
 
-		// Запрос на удаление истекших токенов
 		$sql = "DELETE FROM auth WHERE expired < :currentDateTime";
 		$stmt = $this->connection->prepare($sql);
 		$stmt->bindParam(':currentDateTime', $currentDateTime);

@@ -95,9 +95,8 @@ class UserRequestHandler
 			return;
 		}
 
-		// Создаем пользователя
 		$user = new User(
-			0, // ID будет присвоен базой данных автоматически
+			0,
 			$data['first_name'],
 			$data['last_name'],
 			$data['email'],
@@ -108,11 +107,10 @@ class UserRequestHandler
 		);
 		$userId = $this->userRepository->add($user);
 
-		// Теперь создаем логин для этого пользователя
-		$login = new Login($userId, $user->getEmail(), $data['password']);
-		$login->setPasswordHash($data['password']); // Хэшируем пароль
 
-		/// Добавляем логин в базу данных
+		$login = new Login($userId, $user->getEmail(), $data['password']);
+		$login->setPasswordHash($data['password']);
+
 		try {
 			$this->loginRepository->create($login);
 		} catch (Exception $e) {
@@ -121,7 +119,6 @@ class UserRequestHandler
 			return;
 		}
 
-		// Отправляем ответ
 		echo json_encode(['message' => 'User created']);
 	}
 

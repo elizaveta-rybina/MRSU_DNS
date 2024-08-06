@@ -61,12 +61,10 @@ class LoginRepository implements LoginRepositoryInterface
 			"INSERT INTO login (user_id, email, password) VALUES (:user_id, :email, :password)"
 		);
 
-		// Привязка значений параметров
 		$stmt->bindValue(":user_id", $login->getUserId(), PDO::PARAM_INT);
 		$stmt->bindValue(":email", $login->getEmail(), PDO::PARAM_STR);
 		$stmt->bindValue(":password", $login->getPasswordHash(), PDO::PARAM_STR);
 
-		// Выполнение запроса
 		$stmt->execute();
 	}
 

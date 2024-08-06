@@ -26,9 +26,8 @@ class DomainRepository implements DomainRepositoryInterface
    */
   private function hasRoleForDomain(int $userId, ?int $domainId, UserRole $requiredRole): bool
   {
-    // Если domainId не предоставлен, проверяем роль пользователя глобально
     if ($domainId === null) {
-      $users = $this->userDomainRepo->getAllUsers(); // Метод для получения всех пользователей
+      $users = $this->userDomainRepo->getAllUsers();
       foreach ($users as $user) {
         if ($user->getId() === $userId) {
           return $user->getRole() === $requiredRole;
@@ -37,7 +36,6 @@ class DomainRepository implements DomainRepositoryInterface
       return false;
     }
 
-    // Если domainId предоставлен, проверяем роль пользователя для конкретного домена
     $users = $this->userDomainRepo->getUsersForDomain($domainId);
     foreach ($users as $user) {
       if ($user->getId() === $userId) {
@@ -96,7 +94,6 @@ class DomainRepository implements DomainRepositoryInterface
    */
   public function get(int $id, int $userId): ?Domain
   {
-    // Получаем домен по ID
     $connection = DbContext::getConnection();
     $stmt = $connection->prepare("SELECT * FROM domains WHERE id = :id");
     $stmt->bindValue(":id", $id, PDO::PARAM_INT);
@@ -104,7 +101,7 @@ class DomainRepository implements DomainRepositoryInterface
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$data) {
-      return null; // Домен не найден
+      return null;
     }
 
     $soa = new SOA(
@@ -126,18 +123,17 @@ class DomainRepository implements DomainRepositoryInterface
       $data['expires']
     );
 
-    // Проверяем, есть ли у пользователя доступ к этому домену
     $users = $this->userDomainRepo->getUsersForDomain($id);
     $hasAccess = false;
 
     foreach ($users as $user) {
       if ($user->getId() === $userId) {
         $hasAccess = true;
-        break; // Пользователь имеет доступ
+        break;
       }
     }
 
-    return $hasAccess ? $domain : null; // Возвращаем домен, если доступ есть, иначе null
+    return $hasAccess ? $domain : null;
   }
 
   /**
@@ -150,23 +146,20 @@ class DomainRepository implements DomainRepositoryInterface
    */
   public function delete(int $id, int $userId): bool
   {
-    // Проверяем, имеет ли пользователь доступ к удалению домена
     if (!$this->hasRoleForDomain($userId, $id, UserRole::ADMIN) && !$this->hasRoleForDomain($userId, $id, UserRole::SUPER)) {
-      return false; // Пользователь не имеет права на удаление
+      return false;
     }
 
-    // Удаляем домен по ID
     $connection = DbContext::getConnection();
     $stmt = $connection->prepare("DELETE FROM domains WHERE id = :id");
     $stmt->bindValue(":id", $id, PDO::PARAM_INT);
     $result = $stmt->execute();
 
     if ($result) {
-      // Удаляем связи с пользователями
       $this->userDomainRepo->removeAllUsersFromDomain($id);
     }
 
-    return $result; // Возвращаем результат выполнения операции
+    return $result;
   }
 
   /**
@@ -180,9 +173,8 @@ class DomainRepository implements DomainRepositoryInterface
    */
   public function update(Domain $current, Domain $new, int $userId): bool
   {
-    // Проверяем доступ пользователя к домену
     if (!$this->hasRoleForDomain($userId, $current->getId(), UserRole::EDITOR) && !$this->hasRoleForDomain($userId, $current->getId(), UserRole::SUPER) && !$this->hasRoleForDomain($userId, $current->getId(), UserRole::ADMIN)) {
-      return false; // Пользователь не имеет права на обновление
+      return false;
     }
 
     $connection = DbContext::getConnection();
@@ -214,9 +206,8 @@ class DomainRepository implements DomainRepositoryInterface
    */
   public function add(Domain $data, int $userId): bool
   {
-    // Проверяем, имеет ли пользователь доступ к добавлению домена
     if (!$this->hasRoleForDomain($userId, null, UserRole::ADMIN) && !$this->hasRoleForDomain($userId, null, UserRole::SUPER)) {
-      return false; // Пользователь не имеет права на добавление
+      return false;
     }
 
     $connection = DbContext::getConnection();
@@ -237,7 +228,7 @@ class DomainRepository implements DomainRepositoryInterface
     $domainId = $connection->lastInsertId();
     $this->addUserToDomain($userId, $domainId);
 
-    return $result; // Возвращаем результат выполнения операции
+    return $result;
   }
 
   /**
@@ -290,7 +281,7 @@ class DomainRepository implements DomainRepositoryInterface
       foreach ($users as $user) {
         if ($user->getId() === $userId) {
           $accessibleDomains[] = $domain;
-          break; // Пользователь имеет доступ, не нужно проверять остальных
+          break;
         }
       }
     }

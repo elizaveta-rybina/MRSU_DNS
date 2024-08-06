@@ -17,11 +17,11 @@ require_once 'requestHandlers/ApiRequestHandler.php';
 require_once 'controllers/UserController.php';
 require_once 'middlewares/GlobalErrorHandler.php';
 
-// Установим обработчики ошибок
+
 set_error_handler("GlobalErrorHandler::handleError");
 set_exception_handler("GlobalErrorHandler::handleException");
 
-// Функция для проверки аутентификации
+
 function isAuthenticated(): ?int
 {
 	if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
@@ -35,22 +35,22 @@ function isAuthenticated(): ?int
 	return null;
 }
 
-// Определяем, аутентифицирован ли пользователь
+
 $userId = isAuthenticated();
 
-// Создаем репозитории и обработчики запросов, только если пользователь аутентифицирован
+
 if ($userId !== null) {
-	// Значение `domainId` нужно получить из запроса или контекста
-	$domainId = 1; // Убедитесь, что это значение корректно
+
+	$domainId = 1;
 
 	$userRepository = new UserRepository();
 	$userDomainRepository = new UserDomainRepository();
 	$authRepository = new AuthRepository();
-	$loginRepository = new LoginRepository(); // Для управления логинами
+	$loginRepository = new LoginRepository();
 
-	// Используйте логин и аутентификацию в зависимости от потребностей
-	$recordRepository = new RecordRepository($domainId); // Передача domainId
-	$domainRepository = new DomainRepository($userId); // Передача userId
+
+	$recordRepository = new RecordRepository($domainId);
+	$domainRepository = new DomainRepository($userId);
 
 	$userController = new UserController($userRepository, $authRepository);
 	$userRequestHandler = new UserRequestHandler($userRepository, $loginRepository);
@@ -66,14 +66,14 @@ if ($userId !== null) {
 		$userController
 	);
 
-	// Обработка запроса
+
 	$apiRequestHandler->handleRequest();
 } else {
-	// Если не аутентифицирован, проверяем запрос
+
 	$method = $_SERVER['REQUEST_METHOD'];
 	$path = $_SERVER['REQUEST_URI'];
 
-	// Обработка маршрута логина отдельно
+
 	if ($path === '/login' && $method === 'POST') {
 		$data = json_decode(file_get_contents('php://input'), true);
 		if (isset($data['email']) && isset($data['password'])) {
@@ -85,7 +85,7 @@ if ($userId !== null) {
 		}
 	}
 
-	// Если не аутентифицирован и запрос не на логин, вернуть 401 Unauthorized
+
 	http_response_code(401);
 	echo json_encode(['message' => 'Unauthorized']);
 }

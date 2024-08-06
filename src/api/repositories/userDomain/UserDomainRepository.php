@@ -126,13 +126,11 @@ class UserDomainRepository implements UserDomainRepositoryInterface
 						(bool)$userData['status']
 					);
 				} catch (ValueError $e) {
-					// Обработка исключения, если значение роли неверное
 					error_log('Invalid user role: ' . $userData['role']);
 				}
 			}
 			return $users;
 		} catch (PDOException $e) {
-			// Логирование ошибки или бросание исключения
 			throw new RuntimeException('Error retrieving users for domain: ' . $e->getMessage());
 		}
 	}

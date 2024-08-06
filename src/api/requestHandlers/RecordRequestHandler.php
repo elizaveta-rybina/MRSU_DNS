@@ -67,14 +67,14 @@ class RecordRequestHandler
 		if ($recordId !== null) {
 			$record = $this->recordRepository->get($recordId);
 			if ($record && $record->getDomainId() === $domainId && ($type === null || $record->getType() === $type)) {
-				echo json_encode($record);  // Использует метод jsonSerialize() из интерфейса JsonSerializable
+				echo json_encode($record);
 			} else {
 				http_response_code(404);
 				echo json_encode(['message' => 'Record not found']);
 			}
 		} else {
-			$records = $this->recordRepository->getAll($type); // Использует только $type
-			echo json_encode($records); // Использует метод jsonSerialize() из интерфейса JsonSerializable
+			$records = $this->recordRepository->getAll($type);
+			echo json_encode($records);
 		}
 	}
 

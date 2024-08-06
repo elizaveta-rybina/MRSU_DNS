@@ -90,7 +90,6 @@ class AuthMiddleware
 			$token = str_replace('Bearer ', '', $headers['Authorization']);
 			$userId = $this->authRepository->validateToken($token);
 			if ($userId !== null) {
-				// Можно также сохранить userId в сессии или другой контекст
 				return true;
 			}
 		}

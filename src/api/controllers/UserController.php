@@ -58,7 +58,6 @@ class UserController
 			'message' => 'Invalid email or password'
 		];
 	}
-	//0af30d8858c0abb06d9673de745d7b61
 	/**
 	 * Генерирует новый токен аутентификации для пользователя.
 	 *
