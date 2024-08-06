@@ -1,6 +1,6 @@
 <?php
 
-class Record
+class Record implements JsonSerializable
 {
 	private ?int $id;
 	private int $domainId;
@@ -46,6 +46,22 @@ class Record
 		$this->createdAt = $createdAt;
 		$this->updatedAt = $updatedAt;
 	}
+
+	public function jsonSerialize(): array
+	{
+		return [
+			'id' => $this->id,
+			'domain_id' => $this->domainId,
+			'name' => $this->name,
+			'content' => $this->content,
+			'priority' => $this->priority,
+			'ttl' => $this->ttl,
+			'type' => $this->type,
+			'created_at' => $this->createdAt,
+			'updated_at' => $this->updatedAt,
+		];
+	}
+
 
 	// Геттеры
 	/**

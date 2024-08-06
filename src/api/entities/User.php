@@ -8,7 +8,7 @@ enum UserRole: string
 	case SUPER = 'super';
 }
 
-class User
+class User implements JsonSerializable
 {
 	private int $id;
 	private string $firstName;
@@ -18,7 +18,6 @@ class User
 	private string $createdAt;
 	private string $lastLogin;
 	private bool $status;
-	private string $passwordHash;
 
 	/**
 	 * Конструктор класса User.
@@ -31,7 +30,6 @@ class User
 	 * @param string $createdAt Дата и время создания пользователя.
 	 * @param string $lastLogin Дата и время последнего входа пользователя.
 	 * @param bool $status Статус пользователя (активен или нет).
-	 * @param string $passwordHash Хэш пароля пользователя.
 	 */
 	public function __construct(
 		int $id,
@@ -41,8 +39,7 @@ class User
 		UserRole $role,
 		string $createdAt,
 		string $lastLogin,
-		bool $status,
-		string $passwordHash
+		bool $status
 	) {
 		$this->id = $id;
 		$this->firstName = $firstName;
@@ -52,7 +49,21 @@ class User
 		$this->createdAt = $createdAt;
 		$this->lastLogin = $lastLogin;
 		$this->status = $status;
-		$this->passwordHash = $passwordHash;
+	}
+
+
+	public function jsonSerialize(): array
+	{
+		return [
+			'id' => $this->id,
+			'firstName' => $this->firstName,
+			'lastName' => $this->lastName,
+			'email' => $this->email,
+			'role' => $this->role->value, // Преобразуем enum в строку
+			'createdAt' => $this->createdAt,
+			'lastLogin' => $this->lastLogin,
+			'status' => $this->status,
+		];
 	}
 
 	/**
@@ -236,36 +247,5 @@ class User
 	{
 		$userDomainRepo = new UserDomainRepository();
 		$userDomainRepo->removeUserFromDomain($this->id, $domainId);
-	}
-
-	/**
-	 * Получить хэш пароля пользователя.
-	 *
-	 * @return string Хэш пароля.
-	 */
-	public function getPasswordHash(): string
-	{
-		return $this->passwordHash;
-	}
-
-	/**
-	 * Установить хэш пароля пользователя.
-	 *
-	 * @param string $password Пароль пользователя.
-	 */
-	public function setPasswordHash(string $password): void
-	{
-		$this->passwordHash = password_hash($password, PASSWORD_BCRYPT);
-	}
-
-	/**
-	 * Проверить пароль пользователя.
-	 *
-	 * @param string $password Пароль для проверки.
-	 * @return bool Возвращает true, если пароль совпадает, иначе false.
-	 */
-	public function checkPassword(string $password): bool
-	{
-		return password_verify($password, $this->passwordHash);
 	}
 }

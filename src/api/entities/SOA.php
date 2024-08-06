@@ -1,6 +1,6 @@
 <?php
 
-class SOA
+class SOA implements JsonSerializable
 {
   private $primary_ns;
   private $admin_email;
@@ -37,6 +37,19 @@ class SOA
     $this->retry = $retry;
     $this->expire = $expire;
     $this->ttl = $ttl;
+  }
+
+  public function jsonSerialize(): array
+  {
+    return [
+      'primary_ns' => $this->primary_ns,
+      'admin_email' => $this->admin_email,
+      'serial' => $this->serial,
+      'refresh' => $this->refresh,
+      'retry' => $this->retry,
+      'expire' => $this->expire,
+      'ttl' => $this->ttl,
+    ];
   }
 
   /**
