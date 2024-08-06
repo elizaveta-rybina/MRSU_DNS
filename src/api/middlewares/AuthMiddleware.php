@@ -1,5 +1,7 @@
 <?php
 
+require_once 'repositories/auth/AuthRepository.php'; // Убедитесь, что путь правильный
+
 /**
  * Класс для проверки аутентификации и авторизации пользователей.
  */
@@ -17,6 +19,23 @@ class AuthMiddleware
 		'user/profile',
 		'user/settings'
 	];
+
+	/**
+	 * Репозиторий для работы с аутентификацией.
+	 *
+	 * @var AuthRepository
+	 */
+	private $authRepository;
+
+	/**
+	 * Конструктор класса.
+	 *
+	 * @param AuthRepository $authRepository Репозиторий для работы с аутентификацией.
+	 */
+	public function __construct(AuthRepository $authRepository)
+	{
+		$this->authRepository = $authRepository;
+	}
 
 	/**
 	 * Обрабатывает входящий запрос, проверяя необходимость аутентификации.
@@ -60,12 +79,21 @@ class AuthMiddleware
 	/**
 	 * Проверяет, аутентифицирован ли пользователь.
 	 *
-	 * Проверяет наличие ID пользователя в сессии.
+	 * Проверяет наличие и валидность токена в заголовках запроса.
 	 *
 	 * @return bool Возвращает true, если пользователь аутентифицирован, иначе false.
 	 */
 	private function isAuthenticated()
 	{
-		return isset($_SESSION['user_id']);
+		$headers = getallheaders();
+		if (isset($headers['Authorization'])) {
+			$token = str_replace('Bearer ', '', $headers['Authorization']);
+			$userId = $this->authRepository->validateToken($token);
+			if ($userId !== null) {
+				// Можно также сохранить userId в сессии или другой контекст
+				return true;
+			}
+		}
+		return false;
 	}
 }
