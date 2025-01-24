@@ -1,11 +1,11 @@
-import { Route, Routes } from "react-router-dom"
-import Dashboard from "../../scenes/dashboard"
-import Domain from "../../scenes/domains"
-import Sidebar from "../../scenes/global/Sidebar"
-import Topbar from "../../scenes/global/Topbar"
-import Record from "../../scenes/records"
-import User from "../../scenes/users"
-import Zona from "../../scenes/zonas"
+import { Route, Routes } from "react-router-dom";
+import Dashboard from "../../scenes/dashboard";
+import Domain from "../../scenes/domains";
+import Sidebar from "../../scenes/global/Sidebar";
+import Topbar from "../../scenes/global/Topbar";
+import Record from "../../scenes/records";
+import User from "../../scenes/users";
+import Zona from "../../scenes/zonas";
 
 function Main() {
   return (
